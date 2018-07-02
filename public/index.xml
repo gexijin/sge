@@ -97,6 +97,16 @@ RUN R -e &#39;source(&amp;quot;https://bioconductor.org/biocLite.R&amp;quot;); b
     </item>
     
     <item>
+      <title>markdown 3</title>
+      <link>/post/markdown-3/</link>
+      <pubDate>Mon, 02 Jul 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/markdown-3/</guid>
+      <description>&lt;p&gt;Just test3&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
       <title>Privacy Policy</title>
       <link>/privacy/</link>
       <pubDate>Thu, 28 Jun 2018 00:00:00 -0500</pubDate>
