@@ -82,9 +82,7 @@ RUN R -e &#39;source(&amp;quot;https://bioconductor.org/biocLite.R&amp;quot;); b
       <pubDate>Mon, 02 Jul 2018 00:00:00 +0000</pubDate>
       
       <guid>/post/r-markdown/</guid>
-      <description>&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;hist(iris[,3])&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2018-07-02-r-markdown_files/figure-html/unnamed-chunk-1-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
-</description>
+      <description></description>
     </item>
     
     <item>

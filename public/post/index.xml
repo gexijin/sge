@@ -29,7 +29,7 @@ sudo docker login -u gexijin sudo docker run --name=my-r-base --rm -ti -v /home/
       <pubDate>Mon, 02 Jul 2018 00:00:00 +0000</pubDate>
       
       <guid>/post/r-markdown/</guid>
-      <description>hist(iris[,3])</description>
+      <description></description>
     </item>
     
     <item>
