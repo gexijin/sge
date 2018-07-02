@@ -1,0 +1,15 @@
+---
+title: 'R markdown '
+author: Xijin Ge
+date: '2018-07-02'
+slug: r-markdown
+categories: []
+tags: []
+header:
+  caption: ''
+  image: ''
+---
+
+```{r }
+hist(iris[,2])
+```
