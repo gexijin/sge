@@ -11,5 +11,5 @@ header:
 ---
 
 ```{r }
-hist(iris[,2])
+hist(iris[,3])
 ```
