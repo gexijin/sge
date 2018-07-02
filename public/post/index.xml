@@ -18,8 +18,38 @@
       <pubDate>Mon, 02 Jul 2018 00:00:00 +0000</pubDate>
       
       <guid>/post/deseq2-experimental-design-and-interpretation/</guid>
-      <description>\newline \newline Update. 11/13/17 Thanks to Mike Love for pointing out an error. This is just my understanding. There maybe other errors.
+      <description>Update. 11/13/17 Thanks to Mike Love for pointing out an error. This is just my understanding. There maybe other errors.
 To allow complex study designs in iDEP(http://ge-lab.org/idep/), I tried to understand how factoral models are built and the desired results are extracted from DESeq2. The following is based on the help document from the resutls( ) function in DESeq2, plus some of Mike Love&amp;rsquo;s answers to questions from users.</description>
+    </item>
+    
+    <item>
+      <title>Forecasting mass shootings</title>
+      <link>/post/forecasting-mass-shootings/</link>
+      <pubDate>Mon, 02 Jul 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/forecasting-mass-shootings/</guid>
+      <description>Using the mass shooting data from Mother Jones website, I tried to forecast the number of mass shoottings and total fatalities in the rest of 2018. Some of the R scripts are from this website. Please let me know if I there is any error. I am not an expert on time series analysis. Twitter @StevenXGe
+In recent years, mass shootings are becomming more frequent and more deadly. The models suggest for the rest of 2018, there probably be about 6 more shootings, killing about 59 people in the U.</description>
+    </item>
+    
+    <item>
+      <title>Forecasting mass shootings</title>
+      <link>/post/forecasting-mass-shootings/</link>
+      <pubDate>Mon, 02 Jul 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/forecasting-mass-shootings/</guid>
+      <description>Using the mass shooting data from Mother Jones website, I tried to forecast the number of mass shoottings and total fatalities in the rest of 2018. Some of the R scripts are from this website. Please let me know if I there is any error. I am not an expert on time series analysis. Twitter @StevenXGe
+In recent years, mass shootings are becomming more frequent and more deadly. The models suggest for the rest of 2018, there probably be about 6 more shootings, killing about 59 people in the U.</description>
+    </item>
+    
+    <item>
+      <title>Forecasting mass shootings</title>
+      <link>/post/forecasting-mass-shootings/</link>
+      <pubDate>Mon, 02 Jul 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/forecasting-mass-shootings/</guid>
+      <description>Using the mass shooting data from Mother Jones website, I tried to forecast the number of mass shoottings and total fatalities in the rest of 2018. Some of the R scripts are from this website. Please let me know if I there is any error. I am not an expert on time series analysis. Twitter @StevenXGe
+In recent years, mass shootings are becomming more frequent and more deadly. The models suggest for the rest of 2018, there probably be about 6 more shootings, killing about 59 people in the U.</description>
     </item>
     
     <item>

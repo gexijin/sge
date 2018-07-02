@@ -20,9 +20,7 @@
 
 &lt;p&gt;&lt;img src=&#34;/post/2018-07-02-deseq2-experimental-design-and-interpretation_files/factors5.jpg&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
 
-&lt;p&gt;\newline
-\newline
-&lt;em&gt;Update. 11/13/17  Thanks to Mike Love for pointing out an error. This is just my understanding. There maybe other errors.&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;Update. 11/13/17  Thanks to Mike Love for pointing out an error. This is just my understanding. There maybe other errors.&lt;/em&gt;&lt;/p&gt;
 
 &lt;p&gt;To allow complex study designs in iDEP(&lt;a href=&#34;http://ge-lab.org/idep/&#34; target=&#34;_blank&#34;&gt;http://ge-lab.org/idep/&lt;/a&gt;), I tried to understand how factoral models are built and the desired results are extracted from DESeq2.  The following is based on the help document from the resutls( ) function in DESeq2, plus some of Mike Love&amp;rsquo;s answers to questions from users.&lt;/p&gt;
 
@@ -1776,6 +1774,513 @@ kable(res[1:5,-(3:4)])
 &lt;p&gt;How about many factors, each with many levels? It&amp;rsquo;s going to become increasingly complex. Drawing a network graph like the one above can help you find the right combination.&lt;/p&gt;
 
 &lt;p&gt;Please let me know if you have any comment.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Forecasting mass shootings</title>
+      <link>/post/forecasting-mass-shootings/</link>
+      <pubDate>Mon, 02 Jul 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/forecasting-mass-shootings/</guid>
+      <description>&lt;p&gt;Using the mass shooting data from &lt;a href=&#34;https://www.motherjones.com/politics/2012/12/mass-shootings-mother-jones-full-data/&#34;&gt;Mother Jones website,&lt;/a&gt; I tried to forecast the number of mass shoottings and total fatalities in the rest of 2018. Some of the R scripts are from this &lt;a href=&#34;http://a-little-book-of-r-for-time-series.readthedocs.io/en/latest/src/timeseries.html&#34;&gt;website.&lt;/a&gt; Please let me know if I there is any error. I am not an expert on time series analysis. &lt;a href=&#34;www.twitter.com&#34;&gt;Twitter&lt;/a&gt; &lt;span class=&#34;citation&#34;&gt;@StevenXGe&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;In recent years, mass shootings are becomming more frequent and more deadly. The models suggest for the rest of 2018, there probably be about 6 more shootings, killing about 59 people in the U.S.&lt;/p&gt;
+&lt;div id=&#34;data&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Data&lt;/h1&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;url = &amp;quot;https://docs.google.com/spreadsheet/pub?key=0AswaDV9q95oZdG5fVGJTS25GQXhSTDFpZXE0RHhUdkE&amp;amp;output=csv&amp;quot;
+x = read.csv(url)
+colnames(x)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##  [1] &amp;quot;case&amp;quot;                               
+##  [2] &amp;quot;location&amp;quot;                           
+##  [3] &amp;quot;date&amp;quot;                               
+##  [4] &amp;quot;year&amp;quot;                               
+##  [5] &amp;quot;summary&amp;quot;                            
+##  [6] &amp;quot;Fatalities&amp;quot;                         
+##  [7] &amp;quot;Injured&amp;quot;                            
+##  [8] &amp;quot;total_victims&amp;quot;                      
+##  [9] &amp;quot;Venue&amp;quot;                              
+## [10] &amp;quot;Prior.signs.of.mental.health.issues&amp;quot;
+## [11] &amp;quot;Mental.health...details&amp;quot;            
+## [12] &amp;quot;Weapons.obtained.legally&amp;quot;           
+## [13] &amp;quot;Where.obtained&amp;quot;                     
+## [14] &amp;quot;Type.of.weapons&amp;quot;                    
+## [15] &amp;quot;Weapon.details&amp;quot;                     
+## [16] &amp;quot;Race&amp;quot;                               
+## [17] &amp;quot;Gender&amp;quot;                             
+## [18] &amp;quot;Sources&amp;quot;                            
+## [19] &amp;quot;Mental.Health.Sources&amp;quot;              
+## [20] &amp;quot;latitude&amp;quot;                           
+## [21] &amp;quot;longitude&amp;quot;                          
+## [22] &amp;quot;Type&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;data-cleaning&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Data cleaning&lt;/h1&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;x = x[,c(&amp;quot;date&amp;quot;,&amp;quot;year&amp;quot;,&amp;quot;Fatalities&amp;quot;,&amp;quot;Race&amp;quot;,&amp;quot;Gender&amp;quot;,&amp;quot;Type&amp;quot;)]
+x$Race = gsub(&amp;quot;white&amp;quot;,&amp;quot;White&amp;quot;,as.character(x$Race) )
+x$Race = as.factor(x$Race)
+summary(x)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##         date         year        Fatalities          Race   
+##           : 2   Min.   :1982   Min.   : 3.000   White  :56  
+##  1/17/1989: 1   1st Qu.:1998   1st Qu.: 5.000   black  : 9  
+##  1/28/18  : 1   Median :2009   Median : 6.000   Asian  : 8  
+##  1/30/2006: 1   Mean   :2006   Mean   : 8.313   Black  : 7  
+##  1/6/2017 : 1   3rd Qu.:2015   3rd Qu.: 8.000   Latino : 7  
+##  1/8/2011 : 1   Max.   :2018   Max.   :58.000   Other  : 5  
+##  (Other)  :94   NA&amp;#39;s   :2      NA&amp;#39;s   :2        (Other): 9  
+##            Gender      Type   
+##               : 2        : 2  
+##  Female       : 2   Mass :85  
+##  M            :26   Spree:14  
+##  Male         :70             
+##  Male &amp;amp; Female: 1             
+##                               
+## &lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;x = subset(x,x$year != 2018)
+x$date = as.Date(x$date,&amp;quot;%m/%d/%Y&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;the-number-of-mass-shootings-per-year&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;The number of mass shootings per year&lt;/h1&gt;
+&lt;p&gt;There is no mass shooting in 1983, 1985, and 2002.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;yearly = table(x$year)
+yearly = c(1,0, yearly)
+names(yearly)[1:4]= 1982:1985
+yearly[3]=2
+yearly[4]=0 
+yearly = c(yearly[1:20],0, yearly[21:35])
+names(yearly)[21] = &amp;quot;2002&amp;quot;
+barplot(yearly)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2018-07-02-Forecasting-mass-shootings-2018_files/figure-html/unnamed-chunk-1-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;Clearly, the frequency of mass shootings is increasing in the last 6 years.&lt;/p&gt;
+&lt;div id=&#34;time-series-model&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Time series model&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;series = ts(yearly,start=c(1982)) 
+yforecast = HoltWinters(series, beta=FALSE, gamma=FALSE)
+yforecast&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Holt-Winters exponential smoothing without trend and without seasonal component.
+## 
+## Call:
+## HoltWinters(x = series, beta = FALSE, gamma = FALSE)
+## 
+## Smoothing parameters:
+##  alpha: 0.5024872
+##  beta : FALSE
+##  gamma: FALSE
+## 
+## Coefficients:
+##       [,1]
+## a 8.446514&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;plot(yforecast, main=&amp;quot;Number of mass shootings &amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2018-07-02-Forecasting-mass-shootings-2018_files/figure-html/unnamed-chunk-3-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;The red line is probably the model.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;making-forecast&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Making forecast&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# install.packages(&amp;quot;forecast&amp;quot;)
+library(forecast)
+shottings = forecast(yforecast, h = 1)
+shottings&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##      Point Forecast    Lo 80   Hi 80    Lo 95    Hi 95
+## 2018       8.446514 6.239526 10.6535 5.071217 11.82181&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The model predicts there would be about 8.4 mass shootings this year. Since 2 already happened. There probably would be 6 incidences of mass shooting for the rest of 2018. The 95% confidence interval is between 5 and 11. So it is very likely at least 3 more shootings will occur in 2018.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;total-fatalities-in-2018&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Total fatalities in 2018&lt;/h1&gt;
+&lt;div id=&#34;prepare-data&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Prepare data&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;tem = aggregate(x$Fatalities, by=list(x$year), FUN=sum)
+tem2 = rbind( tem[1,], c(1983,0), tem[2,],c(1985,0),tem[3:18,], c(2002, 0), tem[19:33, ] ) 
+fatalities = tem2[,2]
+names(fatalities) = tem2[,1]
+barplot(fatalities, las=2)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2018-07-02-Forecasting-mass-shootings-2018_files/figure-html/unnamed-chunk-5-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;This data is noisy, but we still see an uptake in total fatalities in the last 10 years.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;series = ts(fatalities,start=c(1982))
+yforecast = HoltWinters(series, beta=FALSE, gamma=FALSE)
+yforecast&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Holt-Winters exponential smoothing without trend and without seasonal component.
+## 
+## Call:
+## HoltWinters(x = series, beta = FALSE, gamma = FALSE)
+## 
+## Smoothing parameters:
+##  alpha: 0.4323295
+##  beta : FALSE
+##  gamma: FALSE
+## 
+## Coefficients:
+##       [,1]
+## a 79.90564&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;plot(yforecast, main=&amp;quot;Total fatalities from mass shooting&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2018-07-02-Forecasting-mass-shootings-2018_files/figure-html/unnamed-chunk-7-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;shottings = forecast(yforecast, h = 1)
+shottings&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##      Point Forecast    Lo 80    Hi 80    Lo 95    Hi 95
+## 2018       79.90564 53.81795 105.9933 40.00795 119.8033&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;So this model predicts that about 80 people will be killed in mass shootings in 2018. Since there were 21 in Florida and Pennsylvania already. The rest of 2018 will see about 59 people getting killed. I hope these are not going to happen in schools.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Forecasting mass shootings</title>
+      <link>/post/forecasting-mass-shootings/</link>
+      <pubDate>Mon, 02 Jul 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/forecasting-mass-shootings/</guid>
+      <description>&lt;p&gt;Using the mass shooting data from &lt;a href=&#34;https://www.motherjones.com/politics/2012/12/mass-shootings-mother-jones-full-data/&#34; target=&#34;_blank&#34;&gt;Mother Jones website,&lt;/a&gt;
+I tried to forecast the number of mass shoottings and total fatalities in the rest of 2018. Some of the R scripts are from this &lt;a href=&#34;http://a-little-book-of-r-for-time-series.readthedocs.io/en/latest/src/timeseries.html&#34; target=&#34;_blank&#34;&gt;website.&lt;/a&gt; Please let me know if I there is any error. I am not an expert on time series analysis. &lt;a href=&#34;www.twitter.com&#34; target=&#34;_blank&#34;&gt;Twitter&lt;/a&gt; @StevenXGe&lt;/p&gt;
+
+&lt;p&gt;In recent years, mass shootings are becomming more frequent and more deadly. The models suggest for the rest of 2018, there probably be about 6 more shootings, killing about 59 people in the U.S.&lt;/p&gt;
+
+&lt;p&gt;#Data&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;url = &amp;quot;https://docs.google.com/spreadsheet/pub?key=0AswaDV9q95oZdG5fVGJTS25GQXhSTDFpZXE0RHhUdkE&amp;amp;output=csv&amp;quot;
+x = read.csv(url)
+colnames(x)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;##  [1] &amp;quot;case&amp;quot;                               
+##  [2] &amp;quot;location&amp;quot;                           
+##  [3] &amp;quot;date&amp;quot;                               
+##  [4] &amp;quot;year&amp;quot;                               
+##  [5] &amp;quot;summary&amp;quot;                            
+##  [6] &amp;quot;Fatalities&amp;quot;                         
+##  [7] &amp;quot;Injured&amp;quot;                            
+##  [8] &amp;quot;total_victims&amp;quot;                      
+##  [9] &amp;quot;Venue&amp;quot;                              
+## [10] &amp;quot;Prior.signs.of.mental.health.issues&amp;quot;
+## [11] &amp;quot;Mental.health...details&amp;quot;            
+## [12] &amp;quot;Weapons.obtained.legally&amp;quot;           
+## [13] &amp;quot;Where.obtained&amp;quot;                     
+## [14] &amp;quot;Type.of.weapons&amp;quot;                    
+## [15] &amp;quot;Weapon.details&amp;quot;                     
+## [16] &amp;quot;Race&amp;quot;                               
+## [17] &amp;quot;Gender&amp;quot;                             
+## [18] &amp;quot;Sources&amp;quot;                            
+## [19] &amp;quot;Mental.Health.Sources&amp;quot;              
+## [20] &amp;quot;latitude&amp;quot;                           
+## [21] &amp;quot;longitude&amp;quot;                          
+## [22] &amp;quot;Type&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;#Data cleaning&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Forecasting mass shootings</title>
+      <link>/post/forecasting-mass-shootings/</link>
+      <pubDate>Mon, 02 Jul 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/forecasting-mass-shootings/</guid>
+      <description>
+
+&lt;p&gt;Using the mass shooting data from &lt;a href=&#34;https://www.motherjones.com/politics/2012/12/mass-shootings-mother-jones-full-data/&#34; target=&#34;_blank&#34;&gt;Mother Jones website,&lt;/a&gt;
+I tried to forecast the number of mass shoottings and total fatalities in the rest of 2018. Some of the R scripts are from this &lt;a href=&#34;http://a-little-book-of-r-for-time-series.readthedocs.io/en/latest/src/timeseries.html&#34; target=&#34;_blank&#34;&gt;website.&lt;/a&gt; Please let me know if I there is any error. I am not an expert on time series analysis. &lt;a href=&#34;www.twitter.com&#34; target=&#34;_blank&#34;&gt;Twitter&lt;/a&gt; @StevenXGe&lt;/p&gt;
+
+&lt;p&gt;In recent years, mass shootings are becomming more frequent and more deadly. The models suggest for the rest of 2018, there probably be about 6 more shootings, killing about 59 people in the U.S.&lt;/p&gt;
+
+&lt;p&gt;#Data&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;url = &amp;quot;https://docs.google.com/spreadsheet/pub?key=0AswaDV9q95oZdG5fVGJTS25GQXhSTDFpZXE0RHhUdkE&amp;amp;output=csv&amp;quot;
+x = read.csv(url)
+colnames(x)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;##  [1] &amp;quot;case&amp;quot;                               
+##  [2] &amp;quot;location&amp;quot;                           
+##  [3] &amp;quot;date&amp;quot;                               
+##  [4] &amp;quot;year&amp;quot;                               
+##  [5] &amp;quot;summary&amp;quot;                            
+##  [6] &amp;quot;Fatalities&amp;quot;                         
+##  [7] &amp;quot;Injured&amp;quot;                            
+##  [8] &amp;quot;total_victims&amp;quot;                      
+##  [9] &amp;quot;Venue&amp;quot;                              
+## [10] &amp;quot;Prior.signs.of.mental.health.issues&amp;quot;
+## [11] &amp;quot;Mental.health...details&amp;quot;            
+## [12] &amp;quot;Weapons.obtained.legally&amp;quot;           
+## [13] &amp;quot;Where.obtained&amp;quot;                     
+## [14] &amp;quot;Type.of.weapons&amp;quot;                    
+## [15] &amp;quot;Weapon.details&amp;quot;                     
+## [16] &amp;quot;Race&amp;quot;                               
+## [17] &amp;quot;Gender&amp;quot;                             
+## [18] &amp;quot;Sources&amp;quot;                            
+## [19] &amp;quot;Mental.Health.Sources&amp;quot;              
+## [20] &amp;quot;latitude&amp;quot;                           
+## [21] &amp;quot;longitude&amp;quot;                          
+## [22] &amp;quot;Type&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;#Data cleaning&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;x = x[,c(&amp;quot;Date&amp;quot;,&amp;quot;Year&amp;quot;,&amp;quot;Fatalities&amp;quot;,&amp;quot;Race&amp;quot;,&amp;quot;Gender&amp;quot;,&amp;quot;Type&amp;quot;)]
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;## Error in `[.data.frame`(x, , c(&amp;quot;Date&amp;quot;, &amp;quot;Year&amp;quot;, &amp;quot;Fatalities&amp;quot;, &amp;quot;Race&amp;quot;, &amp;quot;Gender&amp;quot;, : undefined columns selected
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;x$Race = gsub(&amp;quot;white&amp;quot;,&amp;quot;White&amp;quot;,as.character(x$Race) )
+x$Race = as.factor(x$Race)
+summary(x)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;##                               case                          location 
+##                                 : 1                             : 2  
+##  101 California Street shootings: 1   Aurora, Colorado          : 2  
+##  Accent Signage Systems shooting: 1   Colorado Springs, Colorado: 2  
+##  Air Force base shooting        : 1   Dallas, Texas             : 2  
+##  Alturas tribal shooting        : 1   Fort Hood, Texas          : 2  
+##  Amish school shooting          : 1   Fort Lauderdale, Florida  : 2  
+##  (Other)                        :95   (Other)                   :89  
+##         date         year     
+##           : 2   Min.   :1982  
+##  1/17/1989: 1   1st Qu.:1998  
+##  1/28/18  : 1   Median :2009  
+##  1/30/2006: 1   Mean   :2006  
+##  1/6/2017 : 1   3rd Qu.:2015  
+##  1/8/2011 : 1   Max.   :2018  
+##  (Other)  :94   NA&#39;s   :2     
+##                                                                                                                                                                                                                                                                   summary  
+##                                                                                                                                                                                                                                                                       : 2  
+##   26-year-old Chris Harper Mercer opened fire at Umpqua Community College in southwest Oregon. The gunman shot himself to death after being wounded in a shootout with police.                                                                                        : 1  
+##  Aaron Alexis, 34, a military veteran and contractor from Texas, opened fire in the Navy installation, killing 12 people and wounding 8 before being shot dead by police.                                                                                             : 1  
+##  Abdelkrim Belachheb, 39, opened fire at an upscale nightclub after a woman rejected his advances. He was later arrested.                                                                                                                                             : 1  
+##  Adam Lanza, 20, shot his mother dead at their home then drove to Sandy Hook Elementary school. He forced his way inside and opened fire, killing 20 children and six adults before committing suicide.                                                               : 1  
+##  After he was expelled for having a gun in his locker, Kipland P. Kinkel, 15, a freshman at Thurston High, went on a shooting spree, killing his parents at home and two students at school. Five classmates wrestled Kipland to the ground before he was arrested.   : 1  
+##  (Other)                                                                                                                                                                                                                                                              :94  
+##    Fatalities        Injured       total_victims       Venue   
+##  Min.   : 3.000   Min.   :  0.00   7      :13    Other    :40  
+##  1st Qu.: 5.000   1st Qu.:  1.00   5      : 9    Workplace:28  
+##  Median : 6.000   Median :  3.00   15     : 7    School   :16  
+##  Mean   : 8.313   Mean   : 12.92   11     : 6    Military : 5  
+##  3rd Qu.: 8.000   3rd Qu.: 10.00   3      : 6    Religious: 5  
+##  Max.   :58.000   Max.   :546.00   6      : 6    Other\n  : 3  
+##  NA&#39;s   :2        NA&#39;s   :2        (Other):54    (Other)  : 4  
+##  Prior.signs.of.mental.health.issues
+##          : 2                        
+##  No      :17                        
+##  TBD     : 3                        
+##  Unclear :23                        
+##  Unclear : 1                        
+##  Unknown : 1                        
+##  Yes     :54                        
+##                                                                                                                                                     Mental.health...details
+##  -                                                                                                                                                              :10        
+##  Unclear                                                                                                                                                        : 6        
+##                                                                                                                                                                 : 3        
+##   A psychiatrist, testifying for the prosecution,said he suffered from schizophrenia.                                                                           : 1        
+##  A district court ruled Cho was &amp;quot;an imminent danger&amp;quot; to himself and others as a result of mental illness two years earlier, and directed Cho to seek treatment. : 1        
+##  A former instructor at Oikos described him as &amp;quot;mentally unstable&amp;quot; and &amp;quot;paranoid.&amp;quot;                                                                              : 1        
+##  (Other)                                                                                                                                                        :79        
+##  Weapons.obtained.legally                      Where.obtained
+##  Yes    :66               Unknown                     :15    
+##  No     :15               -                           :11    
+##  TBD    : 7               Unclear                     : 4    
+##  Unknown: 6                                           : 3    
+##         : 2               TBD                         : 3    
+##  \nYes  : 2               Purchased from an individual: 2    
+##  (Other): 3               (Other)                     :63    
+##                                 Type.of.weapons
+##  One semiautomatic handgun              :18    
+##  Two semiautomatic handguns             : 6    
+##  One rifle (assault)                    : 4    
+##  One semiautomatic handgun, one revolver: 4    
+##  semiautomatic rifle                    : 3    
+##                                         : 2    
+##  (Other)                                :64    
+##                                   Weapon.details      Race   
+##  -                                       : 7     White  :56  
+##                                          : 2     black  : 9  
+##  .45-caliber semiautomatic handgun       : 2     Asian  : 8  
+##  9mm semiautomatic handgun               : 2     Black  : 7  
+##  AR-15                                   : 2     Latino : 7  
+##  .22-caliber rifle; two 12-gauge shotguns: 1     Other  : 5  
+##  (Other)                                 :85     (Other): 9  
+##            Gender  
+##               : 2  
+##  Female       : 2  
+##  M            :26  
+##  Male         :70  
+##  Male &amp;amp; Female: 1  
+##                    
+##                    
+##                                                                                                                                                                                                                                                                                                                                                           Sources  
+##                                                                                                                                                                                                                                                                                                                                                               : 2  
+##  http://abc6onyourside.com/news/local/report-of-shooting-in-kirkersville; http://www.cbsnews.com/news/64-guns-seized-from-home-of-killer-in-ohio-nursing-home-shooting/                                                                                                                                                                                       : 1  
+##  http://archives.starbulletin.com/2000/06/02/news/story2.html; http://www.vpc.org/studies/wgun991102.htm                                                                                                                                                                                                                                                      : 1  
+##  http://articles.chicagotribune.com/2001-02-07/news/0102070122_1_navistar-gun-law-hunting-rifle; http://www.vpc.org/studies/wgun010205.htm                                                                                                                                                                                                                    : 1  
+##  http://articles.latimes.com/1987-04-25/news/mn-990_1_palm-bay-police                                                                                                                                                                                                                                                                                         : 1  
+##  http://articles.latimes.com/1988-02-18/news/mn-43514_1_mr-farley-richard-farley-sunnyvale-public-safety-department; http://news.google.com/newspapers?id=uqxAAAAAIBAJ&amp;amp;sjid=sDIHAAAAIBAJ&amp;amp;pg=2425,5898911&amp;amp;dq=richard+farley+shooting&amp;amp;hl=en; http://news.google.com/newspapers?id=FmYzAAAAIBAJ&amp;amp;sjid=WzIHAAAAIBAJ&amp;amp;pg=7028,576811&amp;amp;dq=richard+farley+shooting&amp;amp;hl=en: 1  
+##  (Other)                                                                                                                                                                                                                                                                                                                                                      :94  
+##                                                                                                Mental.Health.Sources
+##  -                                                                                                        :22       
+##                                                                                                           : 2       
+##  (Supreme Court of Florida Document) http://www.murderpedia.org/male.C/images/cruse_william_b/op-74656.pdf: 1       
+##  http://abcnews.go.com/US/story?id=3052278&amp;amp;page=1                                                         : 1       
+##  http://archives.starbulletin.com/2000/06/02/news/story2.html                                             : 1       
+##  http://articles.chicagotribune.com/2001-02-07/news/0102070122_1_navistar-gun-law-hunting-rifle           : 1       
+##  (Other)                                                                                                  :73       
+##     latitude       longitude          Type   
+##  Min.   :21.32   Min.   :-157.88        : 2  
+##  1st Qu.:33.65   1st Qu.:-117.75   Mass :85  
+##  Median :38.25   Median : -93.31   Spree:14  
+##  Mean   :37.44   Mean   : -97.61             
+##  3rd Qu.:41.67   3rd Qu.: -81.52             
+##  Max.   :48.46   Max.   : -71.08             
+##  NA&#39;s   :2       NA&#39;s   :2
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;x = subset(x,x$Year != 2018)
+x$Date = as.Date(x$Date,&amp;quot;%m/%d/%Y&amp;quot;)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;## Error in as.Date.default(x$Date, &amp;quot;%m/%d/%Y&amp;quot;): do not know how to convert &#39;x$Date&#39; to class &amp;quot;Date&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h1 id=&#34;the-number-of-mass-shootings-per-year&#34;&gt;The number of mass shootings per year&lt;/h1&gt;
+
+&lt;p&gt;There is no mass shooting in 1983, 1985, and 2002.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;yearly = table(x$Year)
+yearly = c(1,0, yearly)
+names(yearly)[1:4]= 1982:1985
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;## Error in names(yearly)[1:4] = 1982:1985: &#39;names&#39; attribute [4] must be the same length as the vector [2]
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;yearly[3]=2
+yearly[4]=0 
+yearly = c(yearly[1:20],0, yearly[21:35])
+names(yearly)[21] = &amp;quot;2002&amp;quot;
+barplot(yearly)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;figure/unnamed-chunk-1-1.png&#34; alt=&#34;plot of chunk unnamed-chunk-1&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;Clearly, the frequency of mass shootings is increasing in the last 6 years.&lt;/p&gt;
+
+&lt;h2 id=&#34;time-series-model&#34;&gt;Time series model&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;series = ts(yearly,start=c(1982)) 
+yforecast = HoltWinters(series, beta=FALSE, gamma=FALSE)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;## Error in hw(p, beta, gamma): NA/NaN/Inf in foreign function call (arg 1)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;yforecast
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;## Error in eval(expr, envir, enclos): object &#39;yforecast&#39; not found
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;plot(yforecast, main=&amp;quot;Number of mass shootings &amp;quot;)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;## Error in plot(yforecast, main = &amp;quot;Number of mass shootings &amp;quot;): object &#39;yforecast&#39; not found
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The red line is probably the model.&lt;/p&gt;
+
+&lt;h2 id=&#34;making-forecast&#34;&gt;Making forecast&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;# install.packages(&amp;quot;forecast&amp;quot;)
+library(forecast)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;## Error in library(forecast): there is no package called &#39;forecast&#39;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;shottings = forecast(yforecast, h = 1)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;## Error in forecast(yforecast, h = 1): could not find function &amp;quot;forecast&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;shottings
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;## Error in eval(expr, envir, enclos): object &#39;shottings&#39; not found
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;The model predicts there would be about 8.4 mass shootings this year. Since 2 already happened. There probably would be 6 incidences of mass shooting for the rest of 2018. The 95% confidence interval is between 5 and  11. So it is very likely at least 3 more shootings will occur in 2018.&lt;/p&gt;
+
+&lt;h1 id=&#34;total-fatalities-in-2018&#34;&gt;Total fatalities in 2018&lt;/h1&gt;
+
+&lt;h2 id=&#34;prepare-data&#34;&gt;Prepare data&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;tem = aggregate(x$Fatalities, by=list(x$Year), FUN=sum)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;## Error in aggregate.data.frame(as.data.frame(x), ...): no rows to aggregate
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;tem2 = rbind( tem[1,], c(1983,0), tem[2,],c(1985,0),tem[3:18,], c(2002, 0), tem[19:33, ] ) 
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;## Error in rbind(tem[1, ], c(1983, 0), tem[2, ], c(1985, 0), tem[3:18, ], : object &#39;tem&#39; not found
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;fatalities = tem2[,2]
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;## Error in eval(expr, envir, enclos): object &#39;tem2&#39; not found
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;names(fatalities) = tem2[,1]
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;## Error in eval(expr, envir, enclos): object &#39;tem2&#39; not found
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;barplot(fatalities, las=2)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;## Error in barplot(fatalities, las = 2): object &#39;fatalities&#39; not found
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This data is noisy, but we still see an uptake in total fatalities in the last 10 years.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;series = ts(fatalities,start=c(1982))
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;## Error in is.data.frame(data): object &#39;fatalities&#39; not found
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;yforecast = HoltWinters(series, beta=FALSE, gamma=FALSE)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;## Error in hw(p, beta, gamma): NA/NaN/Inf in foreign function call (arg 1)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;yforecast
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;## Error in eval(expr, envir, enclos): object &#39;yforecast&#39; not found
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;plot(yforecast, main=&amp;quot;Total fatalities from mass shooting&amp;quot;)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;## Error in plot(yforecast, main = &amp;quot;Total fatalities from mass shooting&amp;quot;): object &#39;yforecast&#39; not found
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;shottings = forecast(yforecast, h = 1)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;## Error in forecast(yforecast, h = 1): could not find function &amp;quot;forecast&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;shottings
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;## Error in eval(expr, envir, enclos): object &#39;shottings&#39; not found
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;So this model predicts that about 80 people will be killed in mass shootings in 2018. Since there were 21 in Florida and Pennsylvania already. The rest of 2018 will see about 59 people getting killed. I hope these are not going to happen in schools.&lt;/p&gt;
 </description>
     </item>
     

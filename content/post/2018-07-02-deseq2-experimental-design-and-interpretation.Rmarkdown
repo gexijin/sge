@@ -23,8 +23,7 @@ set.seed(2)
 
 
 
-\newline
-\newline
+
 *Update. 11/13/17  Thanks to Mike Love for pointing out an error. This is just my understanding. There maybe other errors.*
 
 To allow complex study designs in iDEP(http://ge-lab.org/idep/), I tried to understand how factoral models are built and the desired results are extracted from DESeq2.  The following is based on the help document from the resutls( ) function in DESeq2, plus some of Mike Love's answers to questions from users. 
