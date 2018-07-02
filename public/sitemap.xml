@@ -5,6 +5,15 @@
     
     <url>
     
+      <loc>/post/deseq2-experimental-design-and-interpretation/</loc>
+      <lastmod>2018-07-02T00:00:00+00:00</lastmod>
+    </url>
+    
+  
+    
+    
+    <url>
+    
       <loc>/post/i-tried-docker/</loc>
       <lastmod>2018-07-02T00:00:00+00:00</lastmod>
     </url>
@@ -211,6 +220,26 @@
     
       <loc>/publication_types/</loc>
       <lastmod>2013-07-01T00:00:00-05:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/categories/r/</loc>
+      <lastmod>2018-07-02T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/tags/rna-seq/</loc>
+      <lastmod>2018-07-02T00:00:00+00:00</lastmod>
       <priority>0</priority>
     </url>
     

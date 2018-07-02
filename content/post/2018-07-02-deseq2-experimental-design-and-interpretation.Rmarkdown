@@ -1,0 +1,357 @@
+---
+title: DESeq2 experimental design and interpretation
+author: Xijin Ge
+date: '2018-07-02'
+slug: deseq2-experimental-design-and-interpretation
+categories:
+  - R
+tags:
+  - RNA-Seq
+header:
+  caption: ''
+  image: ''
+---
+
+
+```{r global_options, include=FALSE}
+knitr::opts_chunk$set(fig.width=6, fig.height=4,
+                       warning=FALSE, message=FALSE, verbose = FALSE)
+set.seed(2)
+```
+
+![](/post/2018-07-02-deseq2-experimental-design-and-interpretation_files/factors5.jpg)
+
+
+
+\newline
+\newline
+*Update. 11/13/17  Thanks to Mike Love for pointing out an error. This is just my understanding. There maybe other errors.*
+
+To allow complex study designs in iDEP(http://ge-lab.org/idep/), I tried to understand how factoral models are built and the desired results are extracted from DESeq2.  The following is based on the help document from the resutls( ) function in DESeq2, plus some of Mike Love's answers to questions from users. 
+
+
+An important point I want to make is the interpretation of results is tricky when the study design involve multiple factors.  See figure above for an example involving 3 genotypes under 3  conditions.  Similar to regression analysis in R, the *reference levels* for categorical factors forms the foundation of our intereptation. Yet, by default, they are determined alphabetically. 
+
+Before runing DESeq2, it is essential to choose appropriate reference levels for each factors. This can be done by the relevel( ) function in R. Reference level is the baseline level of a factor that forms the basis of meaningful comparisons. In a wildtype vs. mutant experiment, "wild-type" is the reference level. In treated vs. untreated, the reference level is obviously untreated. More details in Exmple 3.
+
+iDEP provides a GUI to DESeq2 for most experimental desings. It also provides convienent interface for exploratory data anlysis and pathway analysis. Try it at http://ge-lab.org/idep/ 
+
+# Example 1: two-group comparison
+First make some example data. 
+```{r}
+library(DESeq2)
+dds <- makeExampleDESeqDataSet(n=10000,m=6)
+assay(dds)[ 1:10,]
+```
+
+This is a very simple experiment design with two conditions.
+```{r}
+colData(dds)
+```
+
+
+```{r}
+dds <- DESeq(dds)
+resultsNames(dds)
+```
+
+This shows the results available. Note that by default, R will choose a reference level for factors based on alphabetical order. Here A is the referece level. Fold change is defined as B compaired with A. To change reference levels, try the relevel( ) function. 
+
+```{r}
+res <- results(dds, contrast=c("condition","B","A"))
+res <- res[order(res$padj),]
+library(knitr)
+kable(res[1:5,-(3:4)])
+```
+
+If we want to use B as control and define fold change using B as baseline. Then we can do this:
+```{r}
+res <- results(dds, contrast=c("condition","A","B"))
+ix = which.min(res$padj)
+res <- res[order(res$padj),]
+kable(res[1:5,-(3:4)])
+```
+
+As you can see, the fold-change are completely opposite direction. Here we show the most significant gene.
+```{r}
+barplot(assay(dds)[ix,],las=2, main=rownames(dds)[ ix  ]  )
+```
+
+
+#Example 2: Multiple groups
+Suppose we have three groups A, B, and C. 
+
+```{r}
+dds <- makeExampleDESeqDataSet(n=100,m=6)
+dds$condition <- factor( c( "A","A","B","B","C","C") )
+dds <- DESeq(dds)
+res = results(dds, contrast=c("condition","C","A"))
+res <- res[order(res$padj),]
+kable(res[1:5,-(3:4)])
+```
+
+
+
+
+# Example 3: two conditions, two genotypes, with an interaction term
+Here we have two genotypes, wild-type (WT), and mutant (MU). Two conditions, control (Ctrl) and treated (Trt). We are interested in the responses of both wild-type and mutant to treatment. We are also interested in the differences in response between genotypes, which is captured by the interaction term in linear models. 
+
+First, we construct example data. Note that we changed sample names from "sample1" to "Wt_Ctrl_1", according to the two factors. 
+```{r}
+dds <- makeExampleDESeqDataSet(n=10000,m=12)
+dds$condition <- factor( c( rep("Ctrl",6), rep("Trt",6) ) )
+dds$genotype <- factor(rep(rep(c("WT","MU"),each=3),2))
+colnames(dds) <- paste(as.character( dds$genotype),as.character( dds$condition),rownames(colData(dds)),  sep="_"  )
+colnames(dds) = gsub("sample","",colnames(dds))
+kable(assay(dds)[1:5,])
+kable( colData(dds))
+```
+
+Check reference levels:
+```{r}
+dds$condition
+```
+
+As you could see, "Ctrl" apeared first in the 2nd line, indicating it is the reference level for factor condition, as we can expect based on alphabetical order. This is what we want and we do not need to do anything. 
+```{r}
+dds$genotype
+```
+But  "Mu" is the reference level for genotype, which is will give us results difficult to interpret. We need to change it.
+
+
+
+```{r}
+dds$genotype = relevel( dds$genotype, "WT")
+dds$genotype
+```
+
+
+Set up the model, and run DESeq2:
+```{r}
+design(dds) <- ~ genotype + condition + genotype:condition
+dds <- DESeq(dds) 
+resultsNames(dds)
+```
+Below, we are going to use the combination of the different results ("genotype_MU_vs_WT", "condition_Trt_vs_Ctrl", "genotypeMU.conditionTrt" ) to derive biologically meaningful comparisons. 
+
+##The  effect of treatment in wild-type (the main effect). 
+```{r}
+res = results(dds, contrast=c("condition","Trt","Ctrl"))
+ix = which.min(res$padj) # most significant
+res <- res[order(res$padj),] # sort
+kable(res[1:5,-(3:4)])
+```
+
+This is for WT, treated compared with untreated. Note that WT is not mentioned, because it is the reference level. In other words, this is the difference between samples No. 7-9, compared with samples No. 1-3.  
+
+Here we show the most significant gene.
+```{r}
+barplot(assay(dds)[ix,],las=2, main=rownames(dds)[ ix  ]  )
+```
+
+##The effect of treatment in mutant
+This is, by definition, the main effect *plus* the interaction term (the extra condition effect in genotype Mutant compared to genotype WT).
+
+```{r}
+res <- results(dds, list( c("condition_Trt_vs_Ctrl","genotypeMU.conditionTrt") ))
+ix = which.min(res$padj) # most significant
+res <- res[order(res$padj),] # sort
+kable(res[1:5,-(3:4)])
+
+```
+Note that it has to be *list*( c("condition_Trt_vs_Ctrl","genotypeMU.conditionTrt") ). If list( ) is ommitted, the results would be drastically different. Perhaps only the first coefficient is used. 
+
+This measures the effect of treatment in mutant. In other words, samples No. 10-12 compared with samples No. 4-6. 
+
+Here we show the most significant gene, which is downregulated expressed in samples 10-12, than samples 4-6 , as expected.
+```{r}
+barplot(assay(dds)[ix,],las=2, main=rownames(dds)[ ix  ]  )
+```
+
+
+##What is the difference between mutant and wild-type without treatment? 
+
+As Ctrl is the reference level, we can just retrieve the "genotype_MU_vs_WT".
+
+```{r}
+res = results(dds, contrast=c("genotype","MU","WT"))
+ix = which.min(res$padj) # most significant
+res <- res[order(res$padj),] # sort
+kable(res[1:5,-(3:4)])
+```
+
+In other words, this is the samples No.4-6  compared with No. 1-3. Here we show the most significant gene.
+```{r}
+barplot(assay(dds)[ix,],las=2, main=rownames(dds)[ ix  ]  )
+```
+
+##With treatment, what is the difference between mutant and wild-type? 
+
+```{r}
+res = results(dds, list( c("genotype_MU_vs_WT","genotypeMU.conditionTrt") ))
+ix = which.min(res$padj) # most significant
+res <- res[order(res$padj),] # sort
+kable(res[1:5,-(3:4)])
+```
+
+This gives us the difference between genotype MU and WT, under condition Trt. In other words, this is the sampless No. 10-12 compared with samples 7-9.
+
+Here we show the most significant gene.
+```{r}
+barplot(assay(dds)[ix,],las=2, main=rownames(dds)[ ix  ]  )
+```
+
+## The different response in genotypes (interaction term)
+Is the  effect of treatment *different* across genotypes? This is the interaction term.
+
+```{r}
+res = results(dds, name="genotypeMU.conditionTrt")
+ix = which.min(res$padj) # most significant
+res <- res[order(res$padj),] # sort
+kable(res[1:5,-(3:4)])
+```
+Here we show the most significant gene.
+```{r}
+barplot(assay(dds)[ix,],las=2, main=rownames(dds)[ ix  ]  )
+```
+
+In wild-type, this gene is upregulated by treatment, while for the  mutant, it is downregulated. 
+
+
+
+# Example 4: Two conditionss, three genotpes with interaction terms
+
+```{r}
+dds <- makeExampleDESeqDataSet(n=10000,m=18)
+dds$genotype <- factor(rep(rep(c("I","II","III"),each=3),2))
+colnames(dds) <- paste(rownames(colData(dds)), as.character( dds$condition), as.character( dds$genotype),sep="_"  )
+colnames(dds) = gsub("sample","S",colnames(dds))
+design(dds) <- ~ genotype + condition + genotype:condition
+dds <- DESeq(dds)
+kable( colData(dds))
+resultsNames(dds)
+```
+
+
+## The condition effect for genotype I (the main effect)
+```{r}
+
+res = results(dds, contrast=c("condition","B","A"))
+ix = which.min(res$padj) # most significant
+res <- res[order(res$padj),] # sort
+kable(res[1:5,-(3:4)])
+barplot(assay(dds)[ix,],las=2, main=rownames(dds)[ ix  ]  )
+```
+
+
+## The condition effect for genotype III.
+This is the main effect *plus* the interaction term
+(the extra condition effect in genotype III compared to genotype I).
+```{r}
+res = results(dds, contrast=list( c("condition_B_vs_A","genotypeIII.conditionB") ))
+ix = which.min(res$padj) # most significant
+res <- res[order(res$padj),] # sort
+kable(res[1:5,-(3:4)])
+barplot(assay(dds)[ix,],las=2, main=rownames(dds)[ ix  ]  )
+```
+
+
+
+## The condition effect for genotype II.
+This is the main effect *plus* the interaction term
+(the extra condition effect in genotype II compared to genotype I).
+```{r}
+res = results(dds, contrast=list( c("condition_B_vs_A","genotypeII.conditionB") ))
+ix = which.min(res$padj) # most significant
+res <- res[order(res$padj),] # sort
+kable(res[1:5,-(3:4)])
+barplot(assay(dds)[ix,],las=2, main=rownames(dds)[ ix  ]  )
+```
+
+This is equivalent to using numeric vector referencing to each of the results. 
+
+[1] "Intercept"              "genotype_II_vs_I"       "genotype_III_vs_I"     
+[4] "condition_B_vs_A"       "genotypeII.conditionB"  "genotypeIII.conditionB"
+```{r}
+res = results(dds, contrast= c(0,0,0,1,1,0))
+ix = which.min(res$padj) # most significant
+res <- res[order(res$padj),] # sort
+kable(res[1:5,-(3:4)])
+barplot(assay(dds)[ix,],las=2, main=rownames(dds)[ ix  ]  )
+```
+
+
+
+## The effect of III vs. II, under condition A. 
+This is the  effect of "genotype_III_vs_I"  *minus*     "genotype_II_vs_I" ? 
+```{r}
+res = results(dds, contrast= c(0,-1,1,0,0,0))
+ix = which.min(res$padj) # most significant
+res <- res[order(res$padj),] # sort
+kable(res[1:5,-(3:4)])
+barplot(assay(dds)[ix,],las=2, main=rownames(dds)[ ix  ]  )
+```
+
+
+## The interaction term for condition effect in genotype III vs genotype I.
+This tests if the condition effect is different in III compared to I 
+```{r}
+res = results(dds, name="genotypeIII.conditionB")
+ix = which.min(res$padj) # most significant
+res <- res[order(res$padj),] # sort
+kable(res[1:5,-(3:4)])
+barplot(assay(dds)[ix,],las=2, main=rownames(dds)[ ix  ]  )
+```
+
+## The interaction term for condition effect in genotype III vs genotype II.
+This tests if the condition effect is different in III compared to II
+
+```{r}
+res = results(dds, contrast=list("genotypeIII.conditionB", "genotypeII.conditionB"))
+ix = which.min(res$padj) # most significant
+res <- res[order(res$padj),] # sort
+kable(res[1:5,-(3:4)])
+barplot(assay(dds)[ix,],las=2, main=rownames(dds)[ ix  ]  )
+```
+
+
+
+# Example 5: Three conditions, three genotypes with interaction terms
+For a more complex example, we now have a 3x3 factorial design. It is convenent to use a diagram to represent study design and the coefficients generated by DESeq2. Each connections in the diagram below represents a coefficient for a contrast and we can use the combination of these to define desired contrasts by travelling through the graph/network. 
+![](I:/factors5.jpg)
+```{r}
+dds <- makeExampleDESeqDataSet(n=10000,m=18)
+dds$genotype <- factor(rep(rep(c("I","II","III"),each=3),2))
+dds$condition <-factor(rep(c("A","B","C"), 6)  )
+colnames(dds) <- paste(as.character( dds$genotype), as.character( dds$condition),rownames(colData(dds)), sep="_"  )
+colnames(dds) = gsub("sample","",colnames(dds))
+design(dds) <- ~ genotype + condition + genotype:condition
+dds <- DESeq(dds)
+kable( colData(dds))
+resultsNames(dds)
+```
+
+To derive desired contrasts, we can travel on the network of factor levels, using the given 9 coefficients as bridges.For example, we are interested in the difference between genotpes III vs. II, under condition C. This is not readily available. But we can travel from C to III, then III to I, I to II, and then II to C. Namely the path is C--III--I--II--C. In terms of coefficients: (III-I) - (II-I) + III.C - II.C= 
+	  "genotype_III_vs_I" - "genotype_II_vs_I"  + "genotypeIII.conditionC" - "genotypeII.conditionC"
+For such a complex contrast, we can use the numerical combination using a vector:
+c(0,-1,1,0,0,0,0,-1,1 )
+These numbers are applied to the coefficients in the resultsNames. To double check we order them:
+```{r}
+cbind(resultsNames(dds),c(0,-1,1,0,0,0,0,-1,1 ) )
+```
+	  
+
+
+Now we can extract the contrast.
+## The effect of III vs. II, under condition C. 
+```{r}
+res = results(dds, contrast= c(0,-1,1,0,0,0,0,0,1 ))
+ix = which.min(res$padj) # most significant
+res <- res[order(res$padj),] # sort
+kable(res[1:5,-(3:4)])
+barplot(assay(dds)[ix,],las=2, main=rownames(dds)[ ix  ]  )
+```
+
+How about many factors, each with many levels? It's going to become increasingly complex. Drawing a network graph like the one above can help you find the right combination. 
+
+Please let me know if you have any comment. 

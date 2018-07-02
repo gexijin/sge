@@ -11,6 +11,1775 @@
     <atom:link href="/" rel="self" type="application/rss+xml" />
     
     <item>
+      <title>DESeq2 experimental design and interpretation</title>
+      <link>/post/deseq2-experimental-design-and-interpretation/</link>
+      <pubDate>Mon, 02 Jul 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/deseq2-experimental-design-and-interpretation/</guid>
+      <description>
+
+&lt;p&gt;&lt;img src=&#34;/post/2018-07-02-deseq2-experimental-design-and-interpretation_files/factors5.jpg&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;\newline
+\newline
+&lt;em&gt;Update. 11/13/17  Thanks to Mike Love for pointing out an error. This is just my understanding. There maybe other errors.&lt;/em&gt;&lt;/p&gt;
+
+&lt;p&gt;To allow complex study designs in iDEP(&lt;a href=&#34;http://ge-lab.org/idep/&#34; target=&#34;_blank&#34;&gt;http://ge-lab.org/idep/&lt;/a&gt;), I tried to understand how factoral models are built and the desired results are extracted from DESeq2.  The following is based on the help document from the resutls( ) function in DESeq2, plus some of Mike Love&amp;rsquo;s answers to questions from users.&lt;/p&gt;
+
+&lt;p&gt;An important point I want to make is the interpretation of results is tricky when the study design involve multiple factors.  See figure above for an example involving 3 genotypes under 3  conditions.  Similar to regression analysis in R, the &lt;em&gt;reference levels&lt;/em&gt; for categorical factors forms the foundation of our intereptation. Yet, by default, they are determined alphabetically.&lt;/p&gt;
+
+&lt;p&gt;Before runing DESeq2, it is essential to choose appropriate reference levels for each factors. This can be done by the relevel( ) function in R. Reference level is the baseline level of a factor that forms the basis of meaningful comparisons. In a wildtype vs. mutant experiment, &amp;ldquo;wild-type&amp;rdquo; is the reference level. In treated vs. untreated, the reference level is obviously untreated. More details in Exmple 3.&lt;/p&gt;
+
+&lt;p&gt;iDEP provides a GUI to DESeq2 for most experimental desings. It also provides convienent interface for exploratory data anlysis and pathway analysis. Try it at &lt;a href=&#34;http://ge-lab.org/idep/&#34; target=&#34;_blank&#34;&gt;http://ge-lab.org/idep/&lt;/a&gt;&lt;/p&gt;
+
+&lt;h1 id=&#34;example-1-two-group-comparison&#34;&gt;Example 1: two-group comparison&lt;/h1&gt;
+
+&lt;p&gt;First make some example data.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;library(DESeq2)
+dds &amp;lt;- makeExampleDESeqDataSet(n=10000,m=6)
+assay(dds)[ 1:10,]
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;##        sample1 sample2 sample3 sample4 sample5 sample6
+## gene1        6       4      11       1       2      13
+## gene2        9      12      23      13      14      28
+## gene3       58     121     173     178     118      97
+## gene4        0       4       0       3       8       3
+## gene5       27       3       6       9       8      12
+## gene6       48       8      35      38      21      13
+## gene7       36      50      61      52      44      22
+## gene8        6       8      16      14      18      19
+## gene9      214     266     419     198     157     166
+## gene10      20      12      16      12      16       2
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This is a very simple experiment design with two conditions.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;colData(dds)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;## DataFrame with 6 rows and 1 column
+##         condition
+##          &amp;lt;factor&amp;gt;
+## sample1         A
+## sample2         A
+## sample3         A
+## sample4         B
+## sample5         B
+## sample6         B
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;dds &amp;lt;- DESeq(dds)
+resultsNames(dds)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;Intercept&amp;quot;        &amp;quot;condition_B_vs_A&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;This shows the results available. Note that by default, R will choose a reference level for factors based on alphabetical order. Here A is the referece level. Fold change is defined as B compaired with A. To change reference levels, try the relevel( ) function.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;res &amp;lt;- results(dds, contrast=c(&amp;quot;condition&amp;quot;,&amp;quot;B&amp;quot;,&amp;quot;A&amp;quot;))
+res &amp;lt;- res[order(res$padj),]
+library(knitr)
+kable(res[1:5,-(3:4)])
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th align=&#34;left&#34;&gt;&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;baseMean&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;log2FoldChange&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;pvalue&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;padj&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene9056&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;360.168909&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;-2.045379&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0000000&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0001372&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene3087&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;43.897516&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;-2.203303&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0000173&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0857004&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene3763&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;72.409877&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;-1.834787&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0000433&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.1434364&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene2054&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;322.494963&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.537408&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0000682&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.1692730&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene4617&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;6.227415&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;6.125238&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0002015&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.4001027&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;If we want to use B as control and define fold change using B as baseline. Then we can do this:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;res &amp;lt;- results(dds, contrast=c(&amp;quot;condition&amp;quot;,&amp;quot;A&amp;quot;,&amp;quot;B&amp;quot;))
+ix = which.min(res$padj)
+res &amp;lt;- res[order(res$padj),]
+kable(res[1:5,-(3:4)])
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th align=&#34;left&#34;&gt;&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;baseMean&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;log2FoldChange&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;pvalue&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;padj&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene9056&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;360.168909&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2.045379&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0000000&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0001372&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene3087&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;43.897516&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2.203303&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0000173&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0857004&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene3763&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;72.409877&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.834787&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0000433&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.1434364&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene2054&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;322.494963&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;-1.537408&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0000682&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.1692730&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene4617&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;6.227415&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;-6.125238&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0002015&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.4001027&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;As you can see, the fold-change are completely opposite direction. Here we show the most significant gene.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;barplot(assay(dds)[ix,],las=2, main=rownames(dds)[ ix  ]  )
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;/post/2018-07-02-deseq2-experimental-design-and-interpretation_files/figure-html/unnamed-chunk-6-1.png&#34; width=&#34;576&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;#Example 2: Multiple groups
+Suppose we have three groups A, B, and C.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;dds &amp;lt;- makeExampleDESeqDataSet(n=100,m=6)
+dds$condition &amp;lt;- factor( c( &amp;quot;A&amp;quot;,&amp;quot;A&amp;quot;,&amp;quot;B&amp;quot;,&amp;quot;B&amp;quot;,&amp;quot;C&amp;quot;,&amp;quot;C&amp;quot;) )
+dds &amp;lt;- DESeq(dds)
+res = results(dds, contrast=c(&amp;quot;condition&amp;quot;,&amp;quot;C&amp;quot;,&amp;quot;A&amp;quot;))
+res &amp;lt;- res[order(res$padj),]
+kable(res[1:5,-(3:4)])
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th align=&#34;left&#34;&gt;&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;baseMean&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;log2FoldChange&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;pvalue&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;padj&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene2&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3.634986&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;-5.101773&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0348679&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.5515088&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene20&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4.678176&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;-4.490982&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0445664&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.5515088&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene34&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;56.068672&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;-1.462155&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0167820&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.5515088&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene35&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;537.847175&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;-1.177240&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0087913&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.5515088&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene41&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;93.967810&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.064734&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0412034&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.5515088&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;h1 id=&#34;example-3-two-conditions-two-genotypes-with-an-interaction-term&#34;&gt;Example 3: two conditions, two genotypes, with an interaction term&lt;/h1&gt;
+
+&lt;p&gt;Here we have two genotypes, wild-type (WT), and mutant (MU). Two conditions, control (Ctrl) and treated (Trt). We are interested in the responses of both wild-type and mutant to treatment. We are also interested in the differences in response between genotypes, which is captured by the interaction term in linear models.&lt;/p&gt;
+
+&lt;p&gt;First, we construct example data. Note that we changed sample names from &amp;ldquo;sample1&amp;rdquo; to &amp;ldquo;Wt_Ctrl_1&amp;rdquo;, according to the two factors.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;dds &amp;lt;- makeExampleDESeqDataSet(n=10000,m=12)
+dds$condition &amp;lt;- factor( c( rep(&amp;quot;Ctrl&amp;quot;,6), rep(&amp;quot;Trt&amp;quot;,6) ) )
+dds$genotype &amp;lt;- factor(rep(rep(c(&amp;quot;WT&amp;quot;,&amp;quot;MU&amp;quot;),each=3),2))
+colnames(dds) &amp;lt;- paste(as.character( dds$genotype),as.character( dds$condition),rownames(colData(dds)),  sep=&amp;quot;_&amp;quot;  )
+colnames(dds) = gsub(&amp;quot;sample&amp;quot;,&amp;quot;&amp;quot;,colnames(dds))
+kable(assay(dds)[1:5,])
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th align=&#34;left&#34;&gt;&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;WT_Ctrl_1&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;WT_Ctrl_2&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;WT_Ctrl_3&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;MU_Ctrl_4&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;MU_Ctrl_5&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;MU_Ctrl_6&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;WT_Trt_7&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;WT_Trt_8&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;WT_Trt_9&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;MU_Trt_10&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;MU_Trt_11&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;MU_Trt_12&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;81&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;47&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;135&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;72&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;81&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;80&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;76&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;57&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;52&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;49&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;64&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;57&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene2&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;70&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;77&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;94&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;54&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;54&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;36&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;51&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;66&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;57&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;51&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;47&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;67&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene3&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;16&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;37&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;8&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;28&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;36&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;14&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;10&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;7&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;11&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;40&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;15&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene4&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;5&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;9&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;5&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;14&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;8&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene5&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;5&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;kable( colData(dds))
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th align=&#34;left&#34;&gt;&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;condition&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;genotype&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;WT_Ctrl_1&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Ctrl&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;WT&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;WT_Ctrl_2&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Ctrl&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;WT&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;WT_Ctrl_3&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Ctrl&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;WT&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;MU_Ctrl_4&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Ctrl&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;MU&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;MU_Ctrl_5&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Ctrl&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;MU&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;MU_Ctrl_6&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Ctrl&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;MU&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;WT_Trt_7&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Trt&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;WT&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;WT_Trt_8&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Trt&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;WT&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;WT_Trt_9&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Trt&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;WT&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;MU_Trt_10&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Trt&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;MU&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;MU_Trt_11&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Trt&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;MU&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;MU_Trt_12&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Trt&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;MU&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;Check reference levels:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;dds$condition
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;##  [1] Ctrl Ctrl Ctrl Ctrl Ctrl Ctrl Trt  Trt  Trt  Trt  Trt  Trt 
+## Levels: Ctrl Trt
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;As you could see, &amp;ldquo;Ctrl&amp;rdquo; apeared first in the 2nd line, indicating it is the reference level for factor condition, as we can expect based on alphabetical order. This is what we want and we do not need to do anything.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;dds$genotype
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;##  [1] WT WT WT MU MU MU WT WT WT MU MU MU
+## Levels: MU WT
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;But  &amp;ldquo;Mu&amp;rdquo; is the reference level for genotype, which is will give us results difficult to interpret. We need to change it.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;dds$genotype = relevel( dds$genotype, &amp;quot;WT&amp;quot;)
+dds$genotype
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;##  [1] WT WT WT MU MU MU WT WT WT MU MU MU
+## Levels: WT MU
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Set up the model, and run DESeq2:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;design(dds) &amp;lt;- ~ genotype + condition + genotype:condition
+dds &amp;lt;- DESeq(dds) 
+resultsNames(dds)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;Intercept&amp;quot;               &amp;quot;genotype_MU_vs_WT&amp;quot;      
+## [3] &amp;quot;condition_Trt_vs_Ctrl&amp;quot;   &amp;quot;genotypeMU.conditionTrt&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Below, we are going to use the combination of the different results (&amp;ldquo;genotype_MU_vs_WT&amp;rdquo;, &amp;ldquo;condition_Trt_vs_Ctrl&amp;rdquo;, &amp;ldquo;genotypeMU.conditionTrt&amp;rdquo; ) to derive biologically meaningful comparisons.&lt;/p&gt;
+
+&lt;p&gt;##The  effect of treatment in wild-type (the main effect).&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;res = results(dds, contrast=c(&amp;quot;condition&amp;quot;,&amp;quot;Trt&amp;quot;,&amp;quot;Ctrl&amp;quot;))
+ix = which.min(res$padj) # most significant
+res &amp;lt;- res[order(res$padj),] # sort
+kable(res[1:5,-(3:4)])
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th align=&#34;left&#34;&gt;&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;baseMean&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;log2FoldChange&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;pvalue&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;padj&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene275&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;25.38836&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2.607896&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0000588&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.2684841&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene2744&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;101.02954&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;-1.670837&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0001099&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.2684841&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene5441&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;58.67469&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.758921&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0001261&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.2684841&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene7021&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;74.29359&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.610853&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0001345&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.2684841&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene7795&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;326.43308&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;-1.624323&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0000407&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.2684841&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;This is for WT, treated compared with untreated. Note that WT is not mentioned, because it is the reference level. In other words, this is the difference between samples No. 7-9, compared with samples No. 1-3.&lt;/p&gt;
+
+&lt;p&gt;Here we show the most significant gene.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;barplot(assay(dds)[ix,],las=2, main=rownames(dds)[ ix  ]  )
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;/post/2018-07-02-deseq2-experimental-design-and-interpretation_files/figure-html/unnamed-chunk-14-1.png&#34; width=&#34;576&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;##The effect of treatment in mutant
+This is, by definition, the main effect &lt;em&gt;plus&lt;/em&gt; the interaction term (the extra condition effect in genotype Mutant compared to genotype WT).&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;res &amp;lt;- results(dds, list( c(&amp;quot;condition_Trt_vs_Ctrl&amp;quot;,&amp;quot;genotypeMU.conditionTrt&amp;quot;) ))
+ix = which.min(res$padj) # most significant
+res &amp;lt;- res[order(res$padj),] # sort
+kable(res[1:5,-(3:4)])
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th align=&#34;left&#34;&gt;&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;baseMean&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;log2FoldChange&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;pvalue&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;padj&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene5102&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;18.69017&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4.757057&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.60e-06&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0156912&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene7367&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;170.69259&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.481016&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.19e-05&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0396827&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene8351&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;27.77227&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3.033622&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;9.80e-06&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0396827&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene8034&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;53.34342&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;-1.841023&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.62e-05&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0403724&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene7272&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;92.82351&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;-1.414967&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;6.70e-05&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.1125817&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;Note that it has to be &lt;em&gt;list&lt;/em&gt;( c(&amp;ldquo;condition_Trt_vs_Ctrl&amp;rdquo;,&amp;ldquo;genotypeMU.conditionTrt&amp;rdquo;) ). If list( ) is ommitted, the results would be drastically different. Perhaps only the first coefficient is used.&lt;/p&gt;
+
+&lt;p&gt;This measures the effect of treatment in mutant. In other words, samples No. 10-12 compared with samples No. 4-6.&lt;/p&gt;
+
+&lt;p&gt;Here we show the most significant gene, which is downregulated expressed in samples 10-12, than samples 4-6 , as expected.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;barplot(assay(dds)[ix,],las=2, main=rownames(dds)[ ix  ]  )
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;/post/2018-07-02-deseq2-experimental-design-and-interpretation_files/figure-html/unnamed-chunk-16-1.png&#34; width=&#34;576&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;##What is the difference between mutant and wild-type without treatment?&lt;/p&gt;
+
+&lt;p&gt;As Ctrl is the reference level, we can just retrieve the &amp;ldquo;genotype_MU_vs_WT&amp;rdquo;.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;res = results(dds, contrast=c(&amp;quot;genotype&amp;quot;,&amp;quot;MU&amp;quot;,&amp;quot;WT&amp;quot;))
+ix = which.min(res$padj) # most significant
+res &amp;lt;- res[order(res$padj),] # sort
+kable(res[1:5,-(3:4)])
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th align=&#34;left&#34;&gt;&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;baseMean&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;log2FoldChange&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;pvalue&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;padj&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene5102&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;18.69017&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;-4.714519&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0000020&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0195596&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene2289&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;45.04711&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.763615&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0000333&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.1218107&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene3388&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;122.85582&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;-1.529323&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0000366&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.1218107&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene915&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;39.03250&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2.104003&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0001133&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.2374861&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene8351&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;27.77227&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;-2.653182&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0001190&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.2374861&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;In other words, this is the samples No.4-6  compared with No. 1-3. Here we show the most significant gene.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;barplot(assay(dds)[ix,],las=2, main=rownames(dds)[ ix  ]  )
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;/post/2018-07-02-deseq2-experimental-design-and-interpretation_files/figure-html/unnamed-chunk-18-1.png&#34; width=&#34;576&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;##With treatment, what is the difference between mutant and wild-type?&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;res = results(dds, list( c(&amp;quot;genotype_MU_vs_WT&amp;quot;,&amp;quot;genotypeMU.conditionTrt&amp;quot;) ))
+ix = which.min(res$padj) # most significant
+res &amp;lt;- res[order(res$padj),] # sort
+kable(res[1:5,-(3:4)])
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th align=&#34;left&#34;&gt;&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;baseMean&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;log2FoldChange&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;pvalue&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;padj&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene4127&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;50.03677&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.925094&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0000091&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0910879&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene3879&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;34.67704&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;-2.133203&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0000283&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0940393&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene4799&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;24.11059&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;-2.459345&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0000197&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0940393&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene5441&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;58.67469&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;-1.744769&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0001418&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.2357639&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene5926&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;161.16737&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.524163&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0001339&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.2357639&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;This gives us the difference between genotype MU and WT, under condition Trt. In other words, this is the sampless No. 10-12 compared with samples 7-9.&lt;/p&gt;
+
+&lt;p&gt;Here we show the most significant gene.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;barplot(assay(dds)[ix,],las=2, main=rownames(dds)[ ix  ]  )
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;/post/2018-07-02-deseq2-experimental-design-and-interpretation_files/figure-html/unnamed-chunk-20-1.png&#34; width=&#34;576&#34; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;the-different-response-in-genotypes-interaction-term&#34;&gt;The different response in genotypes (interaction term)&lt;/h2&gt;
+
+&lt;p&gt;Is the  effect of treatment &lt;em&gt;different&lt;/em&gt; across genotypes? This is the interaction term.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;res = results(dds, name=&amp;quot;genotypeMU.conditionTrt&amp;quot;)
+ix = which.min(res$padj) # most significant
+res &amp;lt;- res[order(res$padj),] # sort
+kable(res[1:5,-(3:4)])
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th align=&#34;left&#34;&gt;&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;baseMean&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;log2FoldChange&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;pvalue&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;padj&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene5102&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;18.69017&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;7.395771&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0000000&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0000341&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene5441&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;58.67469&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;-3.297673&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0000004&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0019104&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene8034&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;53.34342&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;-2.564030&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0000205&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0682558&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene8858&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;14.68650&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4.703936&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0000297&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0742076&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene4799&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;24.11059&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;-2.990101&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0001234&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.2463661&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;Here we show the most significant gene.&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;barplot(assay(dds)[ix,],las=2, main=rownames(dds)[ ix  ]  )
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;/post/2018-07-02-deseq2-experimental-design-and-interpretation_files/figure-html/unnamed-chunk-22-1.png&#34; width=&#34;576&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;In wild-type, this gene is upregulated by treatment, while for the  mutant, it is downregulated.&lt;/p&gt;
+
+&lt;h1 id=&#34;example-4-two-conditionss-three-genotpes-with-interaction-terms&#34;&gt;Example 4: Two conditionss, three genotpes with interaction terms&lt;/h1&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;dds &amp;lt;- makeExampleDESeqDataSet(n=10000,m=18)
+dds$genotype &amp;lt;- factor(rep(rep(c(&amp;quot;I&amp;quot;,&amp;quot;II&amp;quot;,&amp;quot;III&amp;quot;),each=3),2))
+colnames(dds) &amp;lt;- paste(rownames(colData(dds)), as.character( dds$condition), as.character( dds$genotype),sep=&amp;quot;_&amp;quot;  )
+colnames(dds) = gsub(&amp;quot;sample&amp;quot;,&amp;quot;S&amp;quot;,colnames(dds))
+design(dds) &amp;lt;- ~ genotype + condition + genotype:condition
+dds &amp;lt;- DESeq(dds)
+kable( colData(dds))
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th align=&#34;left&#34;&gt;&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;condition&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;genotype&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;sizeFactor&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;S1_A_I&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;A&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;I&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.053964&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;S2_A_I&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;A&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;I&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.058935&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;S3_A_I&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;A&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;I&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.061629&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;S4_A_II&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;A&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;II&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.047347&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;S5_A_II&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;A&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;II&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.059813&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;S6_A_II&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;A&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;II&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.049639&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;S7_A_III&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;A&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;III&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.060271&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;S8_A_III&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;A&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;III&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.057331&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;S9_A_III&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;A&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;III&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.052053&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;S10_B_I&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;B&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;I&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.053989&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;S11_B_I&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;B&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;I&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.044408&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;S12_B_I&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;B&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;I&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.042376&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;S13_B_II&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;B&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;II&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.042354&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;S14_B_II&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;B&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;II&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.050094&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;S15_B_II&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;B&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;II&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.045868&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;S16_B_III&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;B&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;III&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.050772&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;S17_B_III&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;B&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;III&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.047934&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;S18_B_III&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;B&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;III&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.036983&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;resultsNames(dds)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;Intercept&amp;quot;              &amp;quot;genotype_II_vs_I&amp;quot;      
+## [3] &amp;quot;genotype_III_vs_I&amp;quot;      &amp;quot;condition_B_vs_A&amp;quot;      
+## [5] &amp;quot;genotypeII.conditionB&amp;quot;  &amp;quot;genotypeIII.conditionB&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;the-condition-effect-for-genotype-i-the-main-effect&#34;&gt;The condition effect for genotype I (the main effect)&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;res = results(dds, contrast=c(&amp;quot;condition&amp;quot;,&amp;quot;B&amp;quot;,&amp;quot;A&amp;quot;))
+ix = which.min(res$padj) # most significant
+res &amp;lt;- res[order(res$padj),] # sort
+kable(res[1:5,-(3:4)])
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th align=&#34;left&#34;&gt;&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;baseMean&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;log2FoldChange&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;pvalue&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;padj&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene9348&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;48.01943&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.915941&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0000155&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.1546441&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene928&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;60.03093&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;-1.562622&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0001151&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.5748158&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene931&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;439.23135&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;-1.101161&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0004187&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.6066182&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene4483&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;16.83153&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2.957899&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0005487&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.6066182&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene4612&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;29.09139&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;-1.742999&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0006893&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.6066182&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;barplot(assay(dds)[ix,],las=2, main=rownames(dds)[ ix  ]  )
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;/post/2018-07-02-deseq2-experimental-design-and-interpretation_files/figure-html/unnamed-chunk-24-1.png&#34; width=&#34;576&#34; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;the-condition-effect-for-genotype-iii&#34;&gt;The condition effect for genotype III.&lt;/h2&gt;
+
+&lt;p&gt;This is the main effect &lt;em&gt;plus&lt;/em&gt; the interaction term
+(the extra condition effect in genotype III compared to genotype I).&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;res = results(dds, contrast=list( c(&amp;quot;condition_B_vs_A&amp;quot;,&amp;quot;genotypeIII.conditionB&amp;quot;) ))
+ix = which.min(res$padj) # most significant
+res &amp;lt;- res[order(res$padj),] # sort
+kable(res[1:5,-(3:4)])
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th align=&#34;left&#34;&gt;&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;baseMean&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;log2FoldChange&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;pvalue&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;padj&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene316&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;63.666427&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;-1.724235&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0000294&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.2936262&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene252&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;5.751827&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;-6.012712&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0001418&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.2977597&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene2068&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;16.851863&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;-2.725616&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0001422&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.2977597&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene6828&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;19.669827&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2.840392&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0000635&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.2977597&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene7420&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;85.226424&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;-1.510240&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0001788&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.2977597&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;barplot(assay(dds)[ix,],las=2, main=rownames(dds)[ ix  ]  )
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;/post/2018-07-02-deseq2-experimental-design-and-interpretation_files/figure-html/unnamed-chunk-25-1.png&#34; width=&#34;576&#34; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;the-condition-effect-for-genotype-ii&#34;&gt;The condition effect for genotype II.&lt;/h2&gt;
+
+&lt;p&gt;This is the main effect &lt;em&gt;plus&lt;/em&gt; the interaction term
+(the extra condition effect in genotype II compared to genotype I).&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;res = results(dds, contrast=list( c(&amp;quot;condition_B_vs_A&amp;quot;,&amp;quot;genotypeII.conditionB&amp;quot;) ))
+ix = which.min(res$padj) # most significant
+res &amp;lt;- res[order(res$padj),] # sort
+kable(res[1:5,-(3:4)])
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th align=&#34;left&#34;&gt;&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;baseMean&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;log2FoldChange&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;pvalue&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;padj&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene980&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;71.929692&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;-1.711667&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0005822&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.648323&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene1177&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;109.057633&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;-1.281177&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0002111&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.648323&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene5118&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3.487054&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;-5.757413&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0005110&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.648323&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene5570&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;23.786589&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2.329791&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0004286&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.648323&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene6519&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;94.137270&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.422193&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0001399&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.648323&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;barplot(assay(dds)[ix,],las=2, main=rownames(dds)[ ix  ]  )
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;/post/2018-07-02-deseq2-experimental-design-and-interpretation_files/figure-html/unnamed-chunk-26-1.png&#34; width=&#34;576&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;This is equivalent to using numeric vector referencing to each of the results.&lt;/p&gt;
+
+&lt;p&gt;[1] &amp;ldquo;Intercept&amp;rdquo;              &amp;ldquo;genotype_II_vs_I&amp;rdquo;       &amp;ldquo;genotype_III_vs_I&amp;rdquo;&lt;br /&gt;
+[4] &amp;ldquo;condition_B_vs_A&amp;rdquo;       &amp;ldquo;genotypeII.conditionB&amp;rdquo;  &amp;ldquo;genotypeIII.conditionB&amp;rdquo;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;res = results(dds, contrast= c(0,0,0,1,1,0))
+ix = which.min(res$padj) # most significant
+res &amp;lt;- res[order(res$padj),] # sort
+kable(res[1:5,-(3:4)])
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th align=&#34;left&#34;&gt;&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;baseMean&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;log2FoldChange&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;pvalue&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;padj&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene980&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;71.929692&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;-1.711667&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0005822&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.648323&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene1177&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;109.057633&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;-1.281177&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0002111&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.648323&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene5118&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3.487054&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;-5.757413&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0005110&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.648323&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene5570&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;23.786589&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2.329791&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0004286&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.648323&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene6519&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;94.137270&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.422193&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0001399&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.648323&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;barplot(assay(dds)[ix,],las=2, main=rownames(dds)[ ix  ]  )
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;/post/2018-07-02-deseq2-experimental-design-and-interpretation_files/figure-html/unnamed-chunk-27-1.png&#34; width=&#34;576&#34; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;the-effect-of-iii-vs-ii-under-condition-a&#34;&gt;The effect of III vs. II, under condition A.&lt;/h2&gt;
+
+&lt;p&gt;This is the  effect of &amp;ldquo;genotype_III_vs_I&amp;rdquo;  &lt;em&gt;minus&lt;/em&gt;     &amp;ldquo;genotype_II_vs_I&amp;rdquo; ?&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;res = results(dds, contrast= c(0,-1,1,0,0,0))
+ix = which.min(res$padj) # most significant
+res &amp;lt;- res[order(res$padj),] # sort
+kable(res[1:5,-(3:4)])
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th align=&#34;left&#34;&gt;&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;baseMean&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;log2FoldChange&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;pvalue&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;padj&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene7875&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;172.84101&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.316870&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0000354&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.3541800&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene316&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;63.66643&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.399247&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0006044&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.5256726&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene557&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;17.92683&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;-1.980097&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0008418&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.5256726&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene1243&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;51.92628&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;-1.844387&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0004523&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.5256726&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene1702&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;55.34857&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;-1.631481&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0006698&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.5256726&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;barplot(assay(dds)[ix,],las=2, main=rownames(dds)[ ix  ]  )
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;/post/2018-07-02-deseq2-experimental-design-and-interpretation_files/figure-html/unnamed-chunk-28-1.png&#34; width=&#34;576&#34; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;the-interaction-term-for-condition-effect-in-genotype-iii-vs-genotype-i&#34;&gt;The interaction term for condition effect in genotype III vs genotype I.&lt;/h2&gt;
+
+&lt;p&gt;This tests if the condition effect is different in III compared to I&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;res = results(dds, name=&amp;quot;genotypeIII.conditionB&amp;quot;)
+ix = which.min(res$padj) # most significant
+res &amp;lt;- res[order(res$padj),] # sort
+kable(res[1:5,-(3:4)])
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th align=&#34;left&#34;&gt;&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;baseMean&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;log2FoldChange&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;pvalue&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;padj&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene9348&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;48.019429&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;-2.714891&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0000104&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.1042074&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene6251&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;14.477069&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;-4.780646&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0000479&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.2395245&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene839&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;161.393935&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;-1.662756&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0000886&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.2950638&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene9383&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;9.149222&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;-6.436304&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0001560&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.3896367&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene931&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;439.231351&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.562204&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0003858&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.4506833&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;barplot(assay(dds)[ix,],las=2, main=rownames(dds)[ ix  ]  )
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;/post/2018-07-02-deseq2-experimental-design-and-interpretation_files/figure-html/unnamed-chunk-29-1.png&#34; width=&#34;576&#34; /&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;the-interaction-term-for-condition-effect-in-genotype-iii-vs-genotype-ii&#34;&gt;The interaction term for condition effect in genotype III vs genotype II.&lt;/h2&gt;
+
+&lt;p&gt;This tests if the condition effect is different in III compared to II&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;res = results(dds, contrast=list(&amp;quot;genotypeIII.conditionB&amp;quot;, &amp;quot;genotypeII.conditionB&amp;quot;))
+ix = which.min(res$padj) # most significant
+res &amp;lt;- res[order(res$padj),] # sort
+kable(res[1:5,-(3:4)])
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th align=&#34;left&#34;&gt;&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;baseMean&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;log2FoldChange&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;pvalue&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;padj&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene5761&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;27.797507&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4.231182&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0000012&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0116510&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene6598&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;100.143591&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2.317486&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0000214&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.1068006&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene3491&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;325.224707&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.942243&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0001168&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.2853814&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene4635&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;8.411707&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;5.206116&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0000963&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.2853814&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene5118&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3.487054&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;8.088922&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0002454&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.2853814&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;barplot(assay(dds)[ix,],las=2, main=rownames(dds)[ ix  ]  )
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;/post/2018-07-02-deseq2-experimental-design-and-interpretation_files/figure-html/unnamed-chunk-30-1.png&#34; width=&#34;576&#34; /&gt;&lt;/p&gt;
+
+&lt;h1 id=&#34;example-5-three-conditions-three-genotypes-with-interaction-terms&#34;&gt;Example 5: Three conditions, three genotypes with interaction terms&lt;/h1&gt;
+
+&lt;p&gt;For a more complex example, we now have a 3x3 factorial design. It is convenent to use a diagram to represent study design and the coefficients generated by DESeq2. Each connections in the diagram below represents a coefficient for a contrast and we can use the combination of these to define desired contrasts by travelling through the graph/network.
+&lt;img src=&#34;I:/factors5.jpg&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;dds &amp;lt;- makeExampleDESeqDataSet(n=10000,m=18)
+dds$genotype &amp;lt;- factor(rep(rep(c(&amp;quot;I&amp;quot;,&amp;quot;II&amp;quot;,&amp;quot;III&amp;quot;),each=3),2))
+dds$condition &amp;lt;-factor(rep(c(&amp;quot;A&amp;quot;,&amp;quot;B&amp;quot;,&amp;quot;C&amp;quot;), 6)  )
+colnames(dds) &amp;lt;- paste(as.character( dds$genotype), as.character( dds$condition),rownames(colData(dds)), sep=&amp;quot;_&amp;quot;  )
+colnames(dds) = gsub(&amp;quot;sample&amp;quot;,&amp;quot;&amp;quot;,colnames(dds))
+design(dds) &amp;lt;- ~ genotype + condition + genotype:condition
+dds &amp;lt;- DESeq(dds)
+kable( colData(dds))
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th align=&#34;left&#34;&gt;&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;condition&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;genotype&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;sizeFactor&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;I_A_1&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;A&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;I&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.055853&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;I_B_2&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;B&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;I&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.037228&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;I_C_3&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;C&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;I&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.048146&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;II_A_4&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;A&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;II&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.048901&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;II_B_5&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;B&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;II&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.062858&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;II_C_6&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;C&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;II&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.036711&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;III_A_7&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;A&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;III&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.052625&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;III_B_8&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;B&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;III&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.033361&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;III_C_9&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;C&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;III&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.040028&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;I_A_10&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;A&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;I&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.054525&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;I_B_11&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;B&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;I&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.045331&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;I_C_12&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;C&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;I&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.036150&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;II_A_13&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;A&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;II&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.052502&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;II_B_14&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;B&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;II&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.047103&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;II_C_15&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;C&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;II&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.063802&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;III_A_16&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;A&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;III&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.053762&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;III_B_17&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;B&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;III&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.041255&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;III_C_18&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;C&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;III&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.048660&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;resultsNames(dds)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;Intercept&amp;quot;              &amp;quot;genotype_II_vs_I&amp;quot;      
+## [3] &amp;quot;genotype_III_vs_I&amp;quot;      &amp;quot;condition_B_vs_A&amp;quot;      
+## [5] &amp;quot;condition_C_vs_A&amp;quot;       &amp;quot;genotypeII.conditionB&amp;quot; 
+## [7] &amp;quot;genotypeIII.conditionB&amp;quot; &amp;quot;genotypeII.conditionC&amp;quot; 
+## [9] &amp;quot;genotypeIII.conditionC&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;To derive desired contrasts, we can travel on the network of factor levels, using the given 9 coefficients as bridges.For example, we are interested in the difference between genotpes III vs. II, under condition C. This is not readily available. But we can travel from C to III, then III to I, I to II, and then II to C. Namely the path is C&amp;ndash;III&amp;ndash;I&amp;ndash;II&amp;ndash;C. In terms of coefficients: (III-I) - (II-I) + III.C - II.C=
+      &amp;ldquo;genotype_III_vs_I&amp;rdquo; - &amp;ldquo;genotype_II_vs_I&amp;rdquo;  + &amp;ldquo;genotypeIII.conditionC&amp;rdquo; - &amp;ldquo;genotypeII.conditionC&amp;rdquo;
+For such a complex contrast, we can use the numerical combination using a vector:
+c(0,-1,1,0,0,0,0,-1,1 )
+These numbers are applied to the coefficients in the resultsNames. To double check we order them:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;cbind(resultsNames(dds),c(0,-1,1,0,0,0,0,-1,1 ) )
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;pre&gt;&lt;code&gt;##       [,1]                     [,2]
+##  [1,] &amp;quot;Intercept&amp;quot;              &amp;quot;0&amp;quot; 
+##  [2,] &amp;quot;genotype_II_vs_I&amp;quot;       &amp;quot;-1&amp;quot;
+##  [3,] &amp;quot;genotype_III_vs_I&amp;quot;      &amp;quot;1&amp;quot; 
+##  [4,] &amp;quot;condition_B_vs_A&amp;quot;       &amp;quot;0&amp;quot; 
+##  [5,] &amp;quot;condition_C_vs_A&amp;quot;       &amp;quot;0&amp;quot; 
+##  [6,] &amp;quot;genotypeII.conditionB&amp;quot;  &amp;quot;0&amp;quot; 
+##  [7,] &amp;quot;genotypeIII.conditionB&amp;quot; &amp;quot;0&amp;quot; 
+##  [8,] &amp;quot;genotypeII.conditionC&amp;quot;  &amp;quot;-1&amp;quot;
+##  [9,] &amp;quot;genotypeIII.conditionC&amp;quot; &amp;quot;1&amp;quot;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Now we can extract the contrast.&lt;/p&gt;
+
+&lt;h2 id=&#34;the-effect-of-iii-vs-ii-under-condition-c&#34;&gt;The effect of III vs. II, under condition C.&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;res = results(dds, contrast= c(0,-1,1,0,0,0,0,0,1 ))
+ix = which.min(res$padj) # most significant
+res &amp;lt;- res[order(res$padj),] # sort
+kable(res[1:5,-(3:4)])
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th align=&#34;left&#34;&gt;&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;baseMean&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;log2FoldChange&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;pvalue&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;padj&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene793&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;50.368566&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3.737810&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3.36e-05&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.1460573&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene1161&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;827.243573&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.844200&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4.39e-05&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.1460573&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene3314&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;23.430794&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4.580687&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.57e-05&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.1460573&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene4445&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;51.054925&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;-3.096770&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;6.96e-05&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.1736784&lt;/td&gt;
+&lt;/tr&gt;
+
+&lt;tr&gt;
+&lt;td align=&#34;left&#34;&gt;gene1555&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;5.073803&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;10.771498&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;9.70e-05&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.1937244&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;barplot(assay(dds)[ix,],las=2, main=rownames(dds)[ ix  ]  )
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;img src=&#34;/post/2018-07-02-deseq2-experimental-design-and-interpretation_files/figure-html/unnamed-chunk-33-1.png&#34; width=&#34;576&#34; /&gt;&lt;/p&gt;
+
+&lt;p&gt;How about many factors, each with many levels? It&amp;rsquo;s going to become increasingly complex. Drawing a network graph like the one above can help you find the right combination.&lt;/p&gt;
+
+&lt;p&gt;Please let me know if you have any comment.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
       <title>I tried Docker</title>
       <link>/post/i-tried-docker/</link>
       <pubDate>Mon, 02 Jul 2018 00:00:00 +0000</pubDate>
