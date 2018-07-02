@@ -33,6 +33,15 @@ sudo docker login -u gexijin sudo docker run --name=my-r-base --rm -ti -v /home/
     </item>
     
     <item>
+      <title>R markdown test2</title>
+      <link>/post/r-markdown-test2/</link>
+      <pubDate>Mon, 02 Jul 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/r-markdown-test2/</guid>
+      <description>here is another test</description>
+    </item>
+    
+    <item>
       <title>Academic: the website designer for Hugo</title>
       <link>/post/getting-started/</link>
       <pubDate>Wed, 20 Apr 2016 00:00:00 -0500</pubDate>

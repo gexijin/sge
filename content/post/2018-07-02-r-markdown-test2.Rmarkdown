@@ -1,0 +1,13 @@
+---
+title: R markdown test2
+author: Dr G
+date: '2018-07-02'
+slug: r-markdown-test2
+categories: []
+tags: []
+header:
+  caption: ''
+  image: ''
+---
+
+here is another test
