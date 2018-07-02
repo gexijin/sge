@@ -13,14 +13,12 @@
     
     
     <item>
-      <title>Test post</title>
-      <link>/post/test-post/</link>
+      <title>I tried Docker</title>
+      <link>/post/i-tried-docker/</link>
       <pubDate>Mon, 02 Jul 2018 00:00:00 +0000</pubDate>
       
-      <guid>/post/test-post/</guid>
-      <description>Test
-~sea
-Good day, mate!</description>
+      <guid>/post/i-tried-docker/</guid>
+      <description>After being shown by my students many times, I finally figured out how to use Docker to define an isolated environment. My problem is that I wanted to run the most recent version of R and Bioconductor without bothering you guys.</description>
     </item>
     
     <item>
@@ -33,17 +31,6 @@ Good day, mate!</description>
 
 Key features:
  Easily manage various content including homepage, blog posts, publications, talks, and projects Extensible via color themes and widgets/plugins Write in Markdown for easy formatting and code highlighting, with LaTeX for mathematical expressions Social/academic network linking, Google Analytics, and Disqus comments Responsive and mobile friendly Simple and refreshing one page design Multilingual and easy to customize  Color Themes Academic is available in different color themes and font themes.</description>
-    </item>
-    
-    <item>
-      <title>Hello R Markdown</title>
-      <link>/post/2015-07-23-r-rmarkdown/</link>
-      <pubDate>Thu, 23 Jul 2015 21:13:14 -0500</pubDate>
-      
-      <guid>/post/2015-07-23-r-rmarkdown/</guid>
-      <description>R MarkdownThis is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see http://rmarkdown.rstudio.com.
-You can embed an R code chunk like this:
-summary(cars)## speed dist ## Min. : 4.0 Min. : 2.00 ## 1st Qu.:12.0 1st Qu.: 26.00 ## Median :15.0 Median : 36.00 ## Mean :15.4 Mean : 42.98 ## 3rd Qu.</description>
     </item>
     
   </channel>
