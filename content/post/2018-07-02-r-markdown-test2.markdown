@@ -14,7 +14,7 @@ here is another test
 
 
 ```r
-hist(iris[,3])
+hist(iris[,3]) 
 ```
 
 <img src="/post/2018-07-02-r-markdown-test2_files/figure-html/unnamed-chunk-1-1.png" width="672" />

@@ -94,7 +94,7 @@ RUN R -e &#39;source(&amp;quot;https://bioconductor.org/biocLite.R&amp;quot;); b
       <guid>/post/r-markdown-test2/</guid>
       <description>&lt;p&gt;here is another test&lt;/p&gt;
 
-&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;hist(iris[,3])
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;hist(iris[,3]) 
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;&lt;img src=&#34;/post/2018-07-02-r-markdown-test2_files/figure-html/unnamed-chunk-1-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
