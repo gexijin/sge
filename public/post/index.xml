@@ -18,7 +18,9 @@
       <pubDate>Mon, 02 Jul 2018 00:00:00 +0000</pubDate>
       
       <guid>/post/i-tried-docker/</guid>
-      <description>After being shown by my students many times, I finally figured out how to use Docker to define an isolated environment. My problem is that I wanted to run the most recent version of R and Bioconductor without bothering you guys.</description>
+      <description>After being shown by my students many times, I finally figured out how to use Docker to define an isolated environment. My problem is that I wanted to run the most recent version of R and Bioconductor without bothering you guys.
+Turns out it is a two-liner:
+sudo docker login -u gexijin sudo docker run --name=my-r-base --rm -ti -v /home/gex/Rdocker:/myData bioconductor/release_core2 /bin/bash  The first line we need to log-in using username and password from Docker hub: https://hub.</description>
     </item>
     
     <item>

@@ -879,7 +879,7 @@ url('/img/headers/bubbles-wide.jpg');
   
   <span class="middot-divider"></span>
   <span class="article-reading-time">
-    1 min read
+    2 min read
   </span>
   
 
@@ -903,8 +903,9 @@ url('/img/headers/bubbles-wide.jpg');
   </h3>
   <div class="article-style" itemprop="articleBody">
     
-    <p>After being shown by my students many times, I finally figured out how to use Docker to define an isolated environment. My problem is that I wanted to run the most recent version of R and Bioconductor without bothering you guys.</p>
-
+    After being shown by my students many times, I finally figured out how to use Docker to define an isolated environment. My problem is that I wanted to run the most recent version of R and Bioconductor without bothering you guys.
+Turns out it is a two-liner:
+sudo docker login -u gexijin sudo docker run --name=my-r-base --rm -ti -v /home/gex/Rdocker:/myData bioconductor/release_core2 /bin/bash  The first line we need to log-in using username and password from Docker hub: https://hub.
     
   </div>
   <p class="read-more" itemprop="mainEntityOfPage">
