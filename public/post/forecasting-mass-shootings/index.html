@@ -276,7 +276,7 @@ In recent years, mass shootings are becomming more frequent and more deadly. The
   
   <span class="middot-divider"></span>
   <span class="article-reading-time">
-    7 min read
+    4 min read
   </span>
   
 
@@ -348,20 +348,13 @@ In recent years, mass shootings are becomming more frequent and more deadly. The
 
 
     <div class="article-style" itemprop="articleBody">
-      
-
-<p>Using the mass shooting data from <a href="https://www.motherjones.com/politics/2012/12/mass-shootings-mother-jones-full-data/" target="_blank">Mother Jones website,</a>
-I tried to forecast the number of mass shoottings and total fatalities in the rest of 2018. Some of the R scripts are from this <a href="http://a-little-book-of-r-for-time-series.readthedocs.io/en/latest/src/timeseries.html" target="_blank">website.</a> Please let me know if I there is any error. I am not an expert on time series analysis. <a href="www.twitter.com" target="_blank">Twitter</a> @StevenXGe</p>
-
+      <p>Using the mass shooting data from <a href="https://www.motherjones.com/politics/2012/12/mass-shootings-mother-jones-full-data/">Mother Jones website,</a> I tried to forecast the number of mass shoottings and total fatalities in the rest of 2018. Some of the R scripts are from this <a href="http://a-little-book-of-r-for-time-series.readthedocs.io/en/latest/src/timeseries.html">website.</a> Please let me know if I there is any error. I am not an expert on time series analysis. <a href="www.twitter.com">Twitter</a> <span class="citation">@StevenXGe</span></p>
 <p>In recent years, mass shootings are becomming more frequent and more deadly. The models suggest for the rest of 2018, there probably be about 6 more shootings, killing about 59 people in the U.S.</p>
-
-<p>#Data</p>
-
-<pre><code class="language-r">url = &quot;https://docs.google.com/spreadsheet/pub?key=0AswaDV9q95oZdG5fVGJTS25GQXhSTDFpZXE0RHhUdkE&amp;output=csv&quot;
+<div id="data" class="section level1">
+<h1>Data</h1>
+<pre class="r"><code>url = &quot;https://docs.google.com/spreadsheet/pub?key=0AswaDV9q95oZdG5fVGJTS25GQXhSTDFpZXE0RHhUdkE&amp;output=csv&quot;
 x = read.csv(url)
-colnames(x)
-</code></pre>
-
+colnames(x)</code></pre>
 <pre><code>##  [1] &quot;case&quot;                               
 ##  [2] &quot;location&quot;                           
 ##  [3] &quot;date&quot;                               
@@ -383,277 +376,115 @@ colnames(x)
 ## [19] &quot;Mental.Health.Sources&quot;              
 ## [20] &quot;latitude&quot;                           
 ## [21] &quot;longitude&quot;                          
-## [22] &quot;Type&quot;
-</code></pre>
-
-<p>#Data cleaning</p>
-
-<pre><code class="language-r">x = x[,c(&quot;Date&quot;,&quot;Year&quot;,&quot;Fatalities&quot;,&quot;Race&quot;,&quot;Gender&quot;,&quot;Type&quot;)]
-</code></pre>
-
-<pre><code>## Error in `[.data.frame`(x, , c(&quot;Date&quot;, &quot;Year&quot;, &quot;Fatalities&quot;, &quot;Race&quot;, &quot;Gender&quot;, : undefined columns selected
-</code></pre>
-
-<pre><code class="language-r">x$Race = gsub(&quot;white&quot;,&quot;White&quot;,as.character(x$Race) )
+## [22] &quot;Type&quot;</code></pre>
+</div>
+<div id="data-cleaning" class="section level1">
+<h1>Data cleaning</h1>
+<pre class="r"><code>x = x[,c(&quot;date&quot;,&quot;year&quot;,&quot;Fatalities&quot;,&quot;Race&quot;,&quot;Gender&quot;,&quot;Type&quot;)]
+x$Race = gsub(&quot;white&quot;,&quot;White&quot;,as.character(x$Race) )
 x$Race = as.factor(x$Race)
-summary(x)
-</code></pre>
-
-<pre><code>##                               case                          location 
-##                                 : 1                             : 2  
-##  101 California Street shootings: 1   Aurora, Colorado          : 2  
-##  Accent Signage Systems shooting: 1   Colorado Springs, Colorado: 2  
-##  Air Force base shooting        : 1   Dallas, Texas             : 2  
-##  Alturas tribal shooting        : 1   Fort Hood, Texas          : 2  
-##  Amish school shooting          : 1   Fort Lauderdale, Florida  : 2  
-##  (Other)                        :95   (Other)                   :89  
-##         date         year     
-##           : 2   Min.   :1982  
-##  1/17/1989: 1   1st Qu.:1998  
-##  1/28/18  : 1   Median :2009  
-##  1/30/2006: 1   Mean   :2006  
-##  1/6/2017 : 1   3rd Qu.:2015  
-##  1/8/2011 : 1   Max.   :2018  
-##  (Other)  :94   NA's   :2     
-##                                                                                                                                                                                                                                                                   summary  
-##                                                                                                                                                                                                                                                                       : 2  
-##   26-year-old Chris Harper Mercer opened fire at Umpqua Community College in southwest Oregon. The gunman shot himself to death after being wounded in a shootout with police.                                                                                        : 1  
-##  Aaron Alexis, 34, a military veteran and contractor from Texas, opened fire in the Navy installation, killing 12 people and wounding 8 before being shot dead by police.                                                                                             : 1  
-##  Abdelkrim Belachheb, 39, opened fire at an upscale nightclub after a woman rejected his advances. He was later arrested.                                                                                                                                             : 1  
-##  Adam Lanza, 20, shot his mother dead at their home then drove to Sandy Hook Elementary school. He forced his way inside and opened fire, killing 20 children and six adults before committing suicide.                                                               : 1  
-##  After he was expelled for having a gun in his locker, Kipland P. Kinkel, 15, a freshman at Thurston High, went on a shooting spree, killing his parents at home and two students at school. Five classmates wrestled Kipland to the ground before he was arrested.   : 1  
-##  (Other)                                                                                                                                                                                                                                                              :94  
-##    Fatalities        Injured       total_victims       Venue   
-##  Min.   : 3.000   Min.   :  0.00   7      :13    Other    :40  
-##  1st Qu.: 5.000   1st Qu.:  1.00   5      : 9    Workplace:28  
-##  Median : 6.000   Median :  3.00   15     : 7    School   :16  
-##  Mean   : 8.313   Mean   : 12.92   11     : 6    Military : 5  
-##  3rd Qu.: 8.000   3rd Qu.: 10.00   3      : 6    Religious: 5  
-##  Max.   :58.000   Max.   :546.00   6      : 6    Other\n  : 3  
-##  NA's   :2        NA's   :2        (Other):54    (Other)  : 4  
-##  Prior.signs.of.mental.health.issues
-##          : 2                        
-##  No      :17                        
-##  TBD     : 3                        
-##  Unclear :23                        
-##  Unclear : 1                        
-##  Unknown : 1                        
-##  Yes     :54                        
-##                                                                                                                                                     Mental.health...details
-##  -                                                                                                                                                              :10        
-##  Unclear                                                                                                                                                        : 6        
-##                                                                                                                                                                 : 3        
-##   A psychiatrist, testifying for the prosecution,said he suffered from schizophrenia.                                                                           : 1        
-##  A district court ruled Cho was &quot;an imminent danger&quot; to himself and others as a result of mental illness two years earlier, and directed Cho to seek treatment. : 1        
-##  A former instructor at Oikos described him as &quot;mentally unstable&quot; and &quot;paranoid.&quot;                                                                              : 1        
-##  (Other)                                                                                                                                                        :79        
-##  Weapons.obtained.legally                      Where.obtained
-##  Yes    :66               Unknown                     :15    
-##  No     :15               -                           :11    
-##  TBD    : 7               Unclear                     : 4    
-##  Unknown: 6                                           : 3    
-##         : 2               TBD                         : 3    
-##  \nYes  : 2               Purchased from an individual: 2    
-##  (Other): 3               (Other)                     :63    
-##                                 Type.of.weapons
-##  One semiautomatic handgun              :18    
-##  Two semiautomatic handguns             : 6    
-##  One rifle (assault)                    : 4    
-##  One semiautomatic handgun, one revolver: 4    
-##  semiautomatic rifle                    : 3    
-##                                         : 2    
-##  (Other)                                :64    
-##                                   Weapon.details      Race   
-##  -                                       : 7     White  :56  
-##                                          : 2     black  : 9  
-##  .45-caliber semiautomatic handgun       : 2     Asian  : 8  
-##  9mm semiautomatic handgun               : 2     Black  : 7  
-##  AR-15                                   : 2     Latino : 7  
-##  .22-caliber rifle; two 12-gauge shotguns: 1     Other  : 5  
-##  (Other)                                 :85     (Other): 9  
-##            Gender  
-##               : 2  
-##  Female       : 2  
-##  M            :26  
-##  Male         :70  
-##  Male &amp; Female: 1  
-##                    
-##                    
-##                                                                                                                                                                                                                                                                                                                                                           Sources  
-##                                                                                                                                                                                                                                                                                                                                                               : 2  
-##  http://abc6onyourside.com/news/local/report-of-shooting-in-kirkersville; http://www.cbsnews.com/news/64-guns-seized-from-home-of-killer-in-ohio-nursing-home-shooting/                                                                                                                                                                                       : 1  
-##  http://archives.starbulletin.com/2000/06/02/news/story2.html; http://www.vpc.org/studies/wgun991102.htm                                                                                                                                                                                                                                                      : 1  
-##  http://articles.chicagotribune.com/2001-02-07/news/0102070122_1_navistar-gun-law-hunting-rifle; http://www.vpc.org/studies/wgun010205.htm                                                                                                                                                                                                                    : 1  
-##  http://articles.latimes.com/1987-04-25/news/mn-990_1_palm-bay-police                                                                                                                                                                                                                                                                                         : 1  
-##  http://articles.latimes.com/1988-02-18/news/mn-43514_1_mr-farley-richard-farley-sunnyvale-public-safety-department; http://news.google.com/newspapers?id=uqxAAAAAIBAJ&amp;sjid=sDIHAAAAIBAJ&amp;pg=2425,5898911&amp;dq=richard+farley+shooting&amp;hl=en; http://news.google.com/newspapers?id=FmYzAAAAIBAJ&amp;sjid=WzIHAAAAIBAJ&amp;pg=7028,576811&amp;dq=richard+farley+shooting&amp;hl=en: 1  
-##  (Other)                                                                                                                                                                                                                                                                                                                                                      :94  
-##                                                                                                Mental.Health.Sources
-##  -                                                                                                        :22       
-##                                                                                                           : 2       
-##  (Supreme Court of Florida Document) http://www.murderpedia.org/male.C/images/cruse_william_b/op-74656.pdf: 1       
-##  http://abcnews.go.com/US/story?id=3052278&amp;page=1                                                         : 1       
-##  http://archives.starbulletin.com/2000/06/02/news/story2.html                                             : 1       
-##  http://articles.chicagotribune.com/2001-02-07/news/0102070122_1_navistar-gun-law-hunting-rifle           : 1       
-##  (Other)                                                                                                  :73       
-##     latitude       longitude          Type   
-##  Min.   :21.32   Min.   :-157.88        : 2  
-##  1st Qu.:33.65   1st Qu.:-117.75   Mass :85  
-##  Median :38.25   Median : -93.31   Spree:14  
-##  Mean   :37.44   Mean   : -97.61             
-##  3rd Qu.:41.67   3rd Qu.: -81.52             
-##  Max.   :48.46   Max.   : -71.08             
-##  NA's   :2       NA's   :2
-</code></pre>
-
-<pre><code class="language-r">x = subset(x,x$Year != 2018)
-x$Date = as.Date(x$Date,&quot;%m/%d/%Y&quot;)
-</code></pre>
-
-<pre><code>## Error in as.Date.default(x$Date, &quot;%m/%d/%Y&quot;): do not know how to convert 'x$Date' to class &quot;Date&quot;
-</code></pre>
-
-<h1 id="the-number-of-mass-shootings-per-year">The number of mass shootings per year</h1>
-
+summary(x)</code></pre>
+<pre><code>##         date         year        Fatalities          Race   
+##           : 2   Min.   :1982   Min.   : 3.000   White  :56  
+##  1/17/1989: 1   1st Qu.:1998   1st Qu.: 5.000   black  : 9  
+##  1/28/18  : 1   Median :2009   Median : 6.000   Asian  : 8  
+##  1/30/2006: 1   Mean   :2006   Mean   : 8.313   Black  : 7  
+##  1/6/2017 : 1   3rd Qu.:2015   3rd Qu.: 8.000   Latino : 7  
+##  1/8/2011 : 1   Max.   :2018   Max.   :58.000   Other  : 5  
+##  (Other)  :94   NA&#39;s   :2      NA&#39;s   :2        (Other): 9  
+##            Gender      Type   
+##               : 2        : 2  
+##  Female       : 2   Mass :85  
+##  M            :26   Spree:14  
+##  Male         :70             
+##  Male &amp; Female: 1             
+##                               
+## </code></pre>
+<pre class="r"><code>x = subset(x,x$year != 2018)
+x$date = as.Date(x$date,&quot;%m/%d/%Y&quot;)</code></pre>
+</div>
+<div id="the-number-of-mass-shootings-per-year" class="section level1">
+<h1>The number of mass shootings per year</h1>
 <p>There is no mass shooting in 1983, 1985, and 2002.</p>
-
-<pre><code class="language-r">yearly = table(x$Year)
+<pre class="r"><code>yearly = table(x$year)
 yearly = c(1,0, yearly)
 names(yearly)[1:4]= 1982:1985
-</code></pre>
-
-<pre><code>## Error in names(yearly)[1:4] = 1982:1985: 'names' attribute [4] must be the same length as the vector [2]
-</code></pre>
-
-<pre><code class="language-r">yearly[3]=2
+yearly[3]=2
 yearly[4]=0 
 yearly = c(yearly[1:20],0, yearly[21:35])
 names(yearly)[21] = &quot;2002&quot;
-barplot(yearly)
-</code></pre>
-
-<p><img src="figure/unnamed-chunk-1-1.png" alt="plot of chunk unnamed-chunk-1" /></p>
-
+barplot(yearly)</code></pre>
+<p><img src="/post/2018-07-02-Forecasting-mass-shootings-2018_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
 <p>Clearly, the frequency of mass shootings is increasing in the last 6 years.</p>
-
-<h2 id="time-series-model">Time series model</h2>
-
-<pre><code class="language-r">series = ts(yearly,start=c(1982)) 
+<div id="time-series-model" class="section level2">
+<h2>Time series model</h2>
+<pre class="r"><code>series = ts(yearly,start=c(1982)) 
 yforecast = HoltWinters(series, beta=FALSE, gamma=FALSE)
-</code></pre>
-
-<pre><code>## Error in hw(p, beta, gamma): NA/NaN/Inf in foreign function call (arg 1)
-</code></pre>
-
-<pre><code class="language-r">yforecast
-</code></pre>
-
-<pre><code>## Error in eval(expr, envir, enclos): object 'yforecast' not found
-</code></pre>
-
-<pre><code class="language-r">plot(yforecast, main=&quot;Number of mass shootings &quot;)
-</code></pre>
-
-<pre><code>## Error in plot(yforecast, main = &quot;Number of mass shootings &quot;): object 'yforecast' not found
-</code></pre>
-
+yforecast</code></pre>
+<pre><code>## Holt-Winters exponential smoothing without trend and without seasonal component.
+## 
+## Call:
+## HoltWinters(x = series, beta = FALSE, gamma = FALSE)
+## 
+## Smoothing parameters:
+##  alpha: 0.5024872
+##  beta : FALSE
+##  gamma: FALSE
+## 
+## Coefficients:
+##       [,1]
+## a 8.446514</code></pre>
+<pre class="r"><code>plot(yforecast, main=&quot;Number of mass shootings &quot;)</code></pre>
+<p><img src="/post/2018-07-02-Forecasting-mass-shootings-2018_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
 <p>The red line is probably the model.</p>
-
-<h2 id="making-forecast">Making forecast</h2>
-
-<pre><code class="language-r"># install.packages(&quot;forecast&quot;)
+</div>
+<div id="making-forecast" class="section level2">
+<h2>Making forecast</h2>
+<pre class="r"><code># install.packages(&quot;forecast&quot;)
 library(forecast)
-</code></pre>
-
-<pre><code>## Error in library(forecast): there is no package called 'forecast'
-</code></pre>
-
-<pre><code class="language-r">shottings = forecast(yforecast, h = 1)
-</code></pre>
-
-<pre><code>## Error in forecast(yforecast, h = 1): could not find function &quot;forecast&quot;
-</code></pre>
-
-<pre><code class="language-r">shottings
-</code></pre>
-
-<pre><code>## Error in eval(expr, envir, enclos): object 'shottings' not found
-</code></pre>
-
-<p>The model predicts there would be about 8.4 mass shootings this year. Since 2 already happened. There probably would be 6 incidences of mass shooting for the rest of 2018. The 95% confidence interval is between 5 and  11. So it is very likely at least 3 more shootings will occur in 2018.</p>
-
-<h1 id="total-fatalities-in-2018">Total fatalities in 2018</h1>
-
-<h2 id="prepare-data">Prepare data</h2>
-
-<pre><code class="language-r">tem = aggregate(x$Fatalities, by=list(x$Year), FUN=sum)
-</code></pre>
-
-<pre><code>## Error in aggregate.data.frame(as.data.frame(x), ...): no rows to aggregate
-</code></pre>
-
-<pre><code class="language-r">tem2 = rbind( tem[1,], c(1983,0), tem[2,],c(1985,0),tem[3:18,], c(2002, 0), tem[19:33, ] ) 
-</code></pre>
-
-<pre><code>## Error in rbind(tem[1, ], c(1983, 0), tem[2, ], c(1985, 0), tem[3:18, ], : object 'tem' not found
-</code></pre>
-
-<pre><code class="language-r">fatalities = tem2[,2]
-</code></pre>
-
-<pre><code>## Error in eval(expr, envir, enclos): object 'tem2' not found
-</code></pre>
-
-<pre><code class="language-r">names(fatalities) = tem2[,1]
-</code></pre>
-
-<pre><code>## Error in eval(expr, envir, enclos): object 'tem2' not found
-</code></pre>
-
-<pre><code class="language-r">barplot(fatalities, las=2)
-</code></pre>
-
-<pre><code>## Error in barplot(fatalities, las = 2): object 'fatalities' not found
-</code></pre>
-
+shottings = forecast(yforecast, h = 1)
+shottings</code></pre>
+<pre><code>##      Point Forecast    Lo 80   Hi 80    Lo 95    Hi 95
+## 2018       8.446514 6.239526 10.6535 5.071217 11.82181</code></pre>
+<p>The model predicts there would be about 8.4 mass shootings this year. Since 2 already happened. There probably would be 6 incidences of mass shooting for the rest of 2018. The 95% confidence interval is between 5 and 11. So it is very likely at least 3 more shootings will occur in 2018.</p>
+</div>
+</div>
+<div id="total-fatalities-in-2018" class="section level1">
+<h1>Total fatalities in 2018</h1>
+<div id="prepare-data" class="section level2">
+<h2>Prepare data</h2>
+<pre class="r"><code>tem = aggregate(x$Fatalities, by=list(x$year), FUN=sum)
+tem2 = rbind( tem[1,], c(1983,0), tem[2,],c(1985,0),tem[3:18,], c(2002, 0), tem[19:33, ] ) 
+fatalities = tem2[,2]
+names(fatalities) = tem2[,1]
+barplot(fatalities, las=2)</code></pre>
+<p><img src="/post/2018-07-02-Forecasting-mass-shootings-2018_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 <p>This data is noisy, but we still see an uptake in total fatalities in the last 10 years.</p>
-
-<pre><code class="language-r">series = ts(fatalities,start=c(1982))
-</code></pre>
-
-<pre><code>## Error in is.data.frame(data): object 'fatalities' not found
-</code></pre>
-
-<pre><code class="language-r">yforecast = HoltWinters(series, beta=FALSE, gamma=FALSE)
-</code></pre>
-
-<pre><code>## Error in hw(p, beta, gamma): NA/NaN/Inf in foreign function call (arg 1)
-</code></pre>
-
-<pre><code class="language-r">yforecast
-</code></pre>
-
-<pre><code>## Error in eval(expr, envir, enclos): object 'yforecast' not found
-</code></pre>
-
-<pre><code class="language-r">plot(yforecast, main=&quot;Total fatalities from mass shooting&quot;)
-</code></pre>
-
-<pre><code>## Error in plot(yforecast, main = &quot;Total fatalities from mass shooting&quot;): object 'yforecast' not found
-</code></pre>
-
-<pre><code class="language-r">shottings = forecast(yforecast, h = 1)
-</code></pre>
-
-<pre><code>## Error in forecast(yforecast, h = 1): could not find function &quot;forecast&quot;
-</code></pre>
-
-<pre><code class="language-r">shottings
-</code></pre>
-
-<pre><code>## Error in eval(expr, envir, enclos): object 'shottings' not found
-</code></pre>
-
+<pre class="r"><code>series = ts(fatalities,start=c(1982))
+yforecast = HoltWinters(series, beta=FALSE, gamma=FALSE)
+yforecast</code></pre>
+<pre><code>## Holt-Winters exponential smoothing without trend and without seasonal component.
+## 
+## Call:
+## HoltWinters(x = series, beta = FALSE, gamma = FALSE)
+## 
+## Smoothing parameters:
+##  alpha: 0.4323295
+##  beta : FALSE
+##  gamma: FALSE
+## 
+## Coefficients:
+##       [,1]
+## a 79.90564</code></pre>
+<pre class="r"><code>plot(yforecast, main=&quot;Total fatalities from mass shooting&quot;)</code></pre>
+<p><img src="/post/2018-07-02-Forecasting-mass-shootings-2018_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<pre class="r"><code>shottings = forecast(yforecast, h = 1)
+shottings</code></pre>
+<pre><code>##      Point Forecast    Lo 80    Hi 80    Lo 95    Hi 95
+## 2018       79.90564 53.81795 105.9933 40.00795 119.8033</code></pre>
 <p>So this model predicts that about 80 people will be killed in mass shootings in 2018. Since there were 21 in Florida and Pennsylvania already. The rest of 2018 will see about 59 people getting killed. I hope these are not going to happen in schools.</p>
+</div>
+</div>
 
     </div>
 
@@ -670,18 +501,6 @@ library(forecast)
 
 
     
-    
-    <div class="article-widget">
-      <div class="hr-light"></div>
-      <h3>Related</h3>
-      <ul>
-        
-        <li><a href="/post/forecasting-mass-shootings/">Forecasting mass shootings</a></li>
-        
-        <li><a href="/post/forecasting-mass-shootings/">Forecasting mass shootings</a></li>
-        
-      </ul>
-    </div>
     
 
     
