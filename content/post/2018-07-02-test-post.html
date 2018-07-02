@@ -130,28 +130,45 @@ $(document).ready(function () {
 
 
 <p>After being shown by my students many times, I finally figured out how to use Docker to define an isolated environment. My problem is that I wanted to run the most recent version of R and Bioconductor without bothering you guys.</p>
-<p>Turns out it is a two-liner: ```{r eval=FALSE} sudo docker login -u gexijin</p>
-<p>sudo docker run –name=my-r-base –rm -ti -v /home/gex/Rdocker:/myData ``` bioconductor/release_core2 /bin/bash</p>
+<p>Turns out it is a two-liner:</p>
+<pre><code>sudo docker login -u gexijin
+sudo docker run --name=my-r-base --rm -ti -v /home/gex/Rdocker:/myData</code></pre>
+<p>bioconductor/release_core2 /bin/bash</p>
 <p>The first line we need to log-in using username and password from Docker hub: <a href="https://hub.docker.com/" class="uri">https://hub.docker.com/</a> The 2nd line, downloads the most recent Bioconductor image from Docker hub, and runs it. A local folder is mapped to the container.</p>
 <p>It’s quite useful to have an environment that you can mess with.</p>
-<p>If you want to customize the docker image with additional R packages and use it more than once. Here is the complete steps: # 1. Docker login sudo docker login - u gexijin</p>
-<div id="save-this-as-a-file-called-dockerfile" class="section level1">
-<h1>2. Save this as a file called: Dockerfile</h1>
-<p>FROM bioconductor/release_core2 # <a href="https://www.bioconductor.org/help/docker/" class="uri">https://www.bioconductor.org/help/docker/</a></p>
+<p>If you want to customize the docker image with additional R packages and use it more than once. Here is the complete steps:</p>
+<div id="docker-login" class="section level2">
+<h2>1. Docker login</h2>
+<pre><code>sudo docker login - u gexijin</code></pre>
 </div>
-<div id="install-bioconductor-packages" class="section level1">
-<h1>install Bioconductor packages</h1>
-<p>RUN R -e ‘source(“<a href="https://bioconductor.org/biocLite.R" class="uri">https://bioconductor.org/biocLite.R</a>”); biocLite(c(“GO.db”, “GOstats”), suppressUpdates = T)’</p>
-<ol start="3" style="list-style-type: decimal">
-<li><p>Create image called bioconductor sudo docker build -t bioconductor .</p></li>
-<li><p>Run an instance (mapping Rdocker folder in the host to /myData in the container) docker run -v /home/gex/Rdocker:/myData –name bioconductor1 -t bioconductor</p></li>
-</ol>
+<div id="save-this-as-a-file-called-dockerfile" class="section level2">
+<h2>2. Save this as a file called: Dockerfile</h2>
+<pre><code>FROM bioconductor/release_core2
+# https://www.bioconductor.org/help/docker/
+ 
+# install Bioconductor packages
+RUN R -e 'source(&quot;https://bioconductor.org/biocLite.R&quot;); biocLite(c(&quot;GO.db&quot;, &quot;GOstats&quot;), suppressUpdates = T)'</code></pre>
+</div>
+<div id="create-image-called-bioconductor" class="section level2">
+<h2>3. Create image called bioconductor</h2>
+<pre><code>sudo docker build -t bioconductor .</code></pre>
+</div>
+<div id="run-an-instance-mapping-rdocker-folder-in-the-host-to-mydata-in-the-container" class="section level2">
+<h2>4. Run an instance (mapping Rdocker folder in the host to /myData in the container)</h2>
+<pre><code>docker run -v /home/gex/Rdocker:/myData --name bioconductor1 -t bioconductor</code></pre>
 <p>From <a href="https://deis.com/blog/2015/creating-sharing-first-docker-image/" class="uri">https://deis.com/blog/2015/creating-sharing-first-docker-image/</a></p>
-<ol start="5" style="list-style-type: decimal">
-<li><p>Access docker instance sudo docker exec -it bioconductor1 /bin/bash</p></li>
-<li><p>Run large R script nohup R CMD BATCH gene_mapping_all.R &gt; nohup.out &amp;</p></li>
-<li><p>Stop a docker instance sudo docker stop bioconductor1</p></li>
-</ol>
+</div>
+<div id="access-docker-instance" class="section level2">
+<h2>5. Access docker instance</h2>
+<pre><code>sudo docker exec -it bioconductor1 /bin/bash</code></pre>
+</div>
+<div id="run-large-r-script" class="section level2">
+<h2>6. Run large R script</h2>
+<pre><code>nohup R CMD BATCH gene_mapping_all.R &gt; nohup.out &amp;</code></pre>
+</div>
+<div id="stop-a-docker-instance" class="section level2">
+<h2>7. Stop a docker instance</h2>
+<pre><code>sudo docker stop bioconductor1</code></pre>
 </div>
 
 
