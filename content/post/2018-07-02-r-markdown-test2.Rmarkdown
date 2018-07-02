@@ -12,5 +12,8 @@ header:
 
 here is another test
 
+```{r }
+hist(iris[,3])
+```
 
 
