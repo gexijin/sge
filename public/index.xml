@@ -11,6 +11,183 @@
     <atom:link href="/" rel="self" type="application/rss+xml" />
     
     <item>
+      <title>Using Amazon EC2 to run large data analysis cheaply</title>
+      <link>/post/using-amazon-ec2-to-run-large-data-analysis-cheaply/</link>
+      <pubDate>Thu, 05 Jul 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/using-amazon-ec2-to-run-large-data-analysis-cheaply/</guid>
+      <description>&lt;p&gt;Spot instances on Amazon Elastic Compute Cloud (EC2) allows researchers to compute at very low cost. These are some of the idling machines. One caveat is that they can be terminated at any given time. But this is rather rare. Here I document how you how I started a virtual machine on Amazon, establish a connection via SSH and set up the brand-new Linux machine to run R using docker images. I know little about Linux and networking. So if I can make this work, so can you. This is how I managed to make it work. May not be the best way to do it, as I do not understand a lot of the technology.&lt;/p&gt;
+
+&lt;p&gt;Main topics covered this tutorial:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Set up Key Pairs and Security Groups to enable SHH login.&lt;/li&gt;
+&lt;li&gt;Request spot instance (virtual machine)&lt;/li&gt;
+&lt;li&gt;SHH access to the instance via Putty and Filezilla&lt;/li&gt;
+&lt;li&gt;Install Docker software so that we can easily configure a computing environment&lt;/li&gt;
+&lt;li&gt;Build a docker image based on the Bioconductor docker definition files and a few extra packages&lt;/li&gt;
+&lt;li&gt;Start R and compute from within the docker container&lt;/li&gt;
+&lt;li&gt;Create a &amp;ldquo;volume&amp;rdquo; (a virtual hard drive) and attach it to running instances.&lt;/li&gt;
+&lt;li&gt;Take a snapshot of a running instance, copy it across regions, and use it to create a volume.&lt;/li&gt;
+&lt;li&gt;Google Compute Engine set-up.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Follow these detailed instructions:&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;Create an account and sign in to Amazon EC2. You can use your Amazon account. You will need a credit card number.
+&lt;img src=&#34;/img/postEC2/image001.png&#34; alt=&#34;EC2&#34; /&gt;&lt;/li&gt;
+&lt;li&gt;Create a key pair using the menu on the left in the NETWORK &amp;amp; SECURITY. A file named XXX.pem will be downloaded automatically. I called it key1.pem. This file will be needed to establish SHH connection later.
+&lt;img src=&#34;/img/postEC2/image003.png&#34; alt=&#34;Keypair&#34; /&gt;&lt;/li&gt;
+&lt;li&gt;Create a Security Group.  Under the NETWORK&amp;amp; SECURITY, click on Security Groups and then choose Create Security Group.  Select SSH from the &amp;ldquo;Type&amp;rdquo; column.  The default outbound rule seems to work. We will use this Security Group when we initial our instances.
+&lt;img src=&#34;/img/postEC2/image005.png&#34; alt=&#34;rert&#34; /&gt;&lt;/li&gt;
+&lt;li&gt;Start requesting an instance (virtual machine) by clicking on the Spot Requests on the left. Instances initiated with Spot Requests are much cheaper than regular instances. They are computers at idle. They can be terminated abruptly though.
+&lt;img src=&#34;/img/postEC2/image007.png&#34; alt=&#34;rert&#34; /&gt;&lt;/li&gt;
+&lt;li&gt;Start the Spot Advisor and enter your request. Change the amount required to 1. Otherwise, 20 instances will be requested. A 64-core instance with 256GB memory costs $0.67 per hour or about $16 per day.  Note that Amazon has web servers all across the world. You can switch regions from the top right of the screen. Prices and availability of resources vary greatly across the region.
+&lt;img src=&#34;/img/postEC2/image009.png&#34; alt=&#34;rert&#34; /&gt;&lt;/li&gt;
+&lt;li&gt;Configure your instance
+
+&lt;ul&gt;
+&lt;li&gt;Choose Ubuntu Server 16.04&lt;/li&gt;
+&lt;li&gt;Increase EBS volumes to 20 GB from the default 8GB&lt;/li&gt;
+&lt;li&gt;Make sure the key pair you created (key1) is used.&lt;/li&gt;
+&lt;li&gt;Choose the SHH-enabled Security group we created.
+&lt;img src=&#34;/img/postEC2/image011.png&#34; alt=&#34;rert&#34; /&gt;&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;Click Launch and wait a few minutes for Amazon to fulfill this request. Reasons for failed requests vary. There are limits on the maximum number of spot instances for a region such as us-east-2b. There are also limits on new users. These can be lifted by filing a request in the Support Center.
+&lt;img src=&#34;/img/postEC2/image013.png&#34; alt=&#34;rert&#34; /&gt;&lt;/li&gt;
+&lt;li&gt;Once fulfilled, the instance is listed under Instances.
+&lt;img src=&#34;/img/postEC2/image015.png&#34; alt=&#34;image&#34; /&gt;&lt;/li&gt;
+&lt;li&gt;To connect the instance, click on the Connect button (above), information like this will be shown.
+&lt;img src=&#34;/img/postEC2/image017.png&#34; alt=&#34;image&#34; /&gt;&lt;/li&gt;
+&lt;li&gt;Download Puttygen.exe to convert the key1.pem we got from Amazon to a private key file.
+&lt;img src=&#34;/img/postEC2/image019.png&#34; alt=&#34;image&#34; /&gt;&lt;/li&gt;
+&lt;li&gt;Download and start Putty.exe
+
+&lt;ul&gt;
+&lt;li&gt;Copy and paste the public DNS, such as ec2-52-14-231-133.us-east-2.compute.amazonaws.com&lt;/li&gt;
+&lt;li&gt;Under Connection and Data, enter the user name: ubuntu or ec2-user&lt;/li&gt;
+&lt;li&gt;Under Connection -&amp;gt; SSH  -&amp;gt; Auth, upload the converted private key file.&lt;/li&gt;
+&lt;li&gt;Save this session info as EC2-spot3, so that next time we can easily connect to this instances without going through a-c.
+&lt;img src=&#34;/img/postEC2/image021.png&#34; alt=&#34;image&#34; /&gt;&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;We are connected to the instance!!!&lt;br /&gt;
+&lt;img src=&#34;/img/postEC2/image023.png&#34; alt=&#34;image&#34; /&gt;&lt;/li&gt;
+&lt;li&gt;To copy files to this instance, use FileZilla and follow directions here: &lt;a href=&#34;http://angus.readthedocs.io/en/2014/amazon/transfer-files-between-instance.html&#34; target=&#34;_blank&#34;&gt;http://angus.readthedocs.io/en/2014/amazon/transfer-files-between-instance.html&lt;/a&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Go to Edit -&amp;gt; Settings to add the key1.pem file as a security key&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;File -&amp;gt; Site Manager -&amp;gt; New Site:
+
+&lt;ul&gt;
+&lt;li&gt;Change Protocol to SFTP;  paste host name, Change Logon Type to Normal;  and enter the username &amp;ldquo;ubuntu&amp;rdquo;.&lt;/li&gt;
+&lt;li&gt;Alternatively, we can use scp:
+&lt;code&gt;
+scp -i ../key1.pem  animals.tar.gz ubuntu@ec2-52-14-179-157.us-east-2.compute.amazonaws.com:/mnt/data/
+&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;&lt;/li&gt;
+&lt;li&gt;Install Docker software follow this &lt;a href=&#34;https://docs.docker.com/install/linux/docker-ce/ubuntu/#install-using-the-repository&#34; target=&#34;_blank&#34;&gt;instruction&lt;/a&gt;, summerized below:
+&lt;code&gt;
+sudo apt-get update
+sudo apt-get install \
+apt-transport-https \
+ca-certificates \
+curl \
+software-properties-common
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+sudo add-apt-repository \
+&amp;quot;deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+$(lsb_release -cs) \
+stable&amp;quot;
+sudo apt-get update
+sudo apt-get install docker-ce
+&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Define your docker image. Save this  as a file called: Dockerfile in a folder such as /home/ubuntu/dockers/. See &lt;a href=&#34;https://www.bioconductor.org/help/docker/&#34; target=&#34;_blank&#34;&gt;here for the Bioconductor docker&lt;/a&gt;
+&lt;code&gt;
+FROM bioconductor/release_core2
+RUN R -e &#39;source(&amp;quot;https://bioconductor.org/biocLite.R&amp;quot;);
+biocLite(c(&amp;quot;GO.db&amp;quot;, &amp;quot;GOstats&amp;quot;), suppressUpdates = T)&#39;
+&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Create an image called mybioconductor. Navigate to the folder that contains the file named Dockerfile, and then
+&lt;code&gt;
+sudo docker build -t mybioconductor  .
+&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Create a data folder
+&lt;code&gt;
+mkdir ~/data
+&lt;/code&gt;
+18.Start Bioconductor Docker container instance called bio1. The /home/ubuntu/data folder visible in the docker container as /data
+&lt;code&gt;
+sudo docker run -v /home/ubuntu/data:/data --name bio1 -t mybioconductor 
+&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Within the container, you now have the most recent R and Bioconductor. Note that you are logged in as root in the container with IDs like 9c4b9c5d1492.
+&lt;img src=&#34;/img/postEC2/image025.png&#34; alt=&#34;image&#34; /&gt;&lt;/li&gt;
+&lt;li&gt;To run large R jobs in the background use nohup
+&lt;code&gt;
+nohup R CMD BATCH myScript.R &amp;gt; nohup.out &amp;amp; 
+&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;It is safe to exit the container. To go back to the container:
+&lt;code&gt;
+sudo exec -it bio2 /bin/bash 
+&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;The following steps are optional.&lt;/p&gt;
+
+&lt;ol&gt;
+&lt;li&gt;Create a volume from Elastic Block Store on the menu bar of the EC2 interface.
+Create volume in the exactly the same region such as us-east-2b. These storages will persist even if the instance is terminated.&lt;/li&gt;
+&lt;li&gt;Attach the volume to the instance.  Select the volume and attach to the desired instance&lt;/li&gt;
+&lt;li&gt;Mount the created volume to a folder /mnt. Note that the volume needs to be mounted again after reboot. &lt;a href=&#34;https://n2ws.com/blog/how-to-guides/connect-aws-ebs-volume-another-instance&#34; target=&#34;_blank&#34;&gt;See here&lt;/a&gt;
+&lt;code&gt;
+cd /
+sudo mkdir mnt  # create a folder
+sudo chmod -R a+rwX /mnt
+lsblk    # check the list of devices 
+sudo mkfs.ext4 /dev/xvdf      # create a file system
+sudo mount /dev/xvdf  /mnt 
+&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Snapshots can be created from the running instances. This snapshot can be copied across regions (Ohio to Central). We can also create a volume based on the snapshot and access the data. To mount volumes created from snapshots. Note that file system already exists on the volumes created from snapshots. We should be mounting the xvdf1, not xvdf. &lt;a href=&#34;https://serverfault.com/questions/632905/cannot-mount-an-existing-ebs-on-aws&#34; target=&#34;_blank&#34;&gt;Details&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;pre&gt;&lt;code&gt;cd /
+sudo mkdir mnt  # create folder
+lsblk    # check the list of devices 
+sudo mount /dev/xvdf1  /mnt      
+sudo chmod -R a+rwX /mnt    # make folder writable to all
+
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Google Compute Engine can be set up following a similar fashion following &lt;a href=&#34;https://www.onepagezen.com/google-cloud-ftp-filezilla-quick-start/&#34; target=&#34;_blank&#34;&gt;instructions&lt;/a&gt;
+ - Login and create instance at Google  Compute Engine
+ - Download PuttyGen
+ - click Generate to create key pairs
+ - Save private key file
+ - Copy the public key to clipboard
+ - Click Metadata in Compute Engine menu and add SHH Key by paste the public key
+ - Filezella &amp;ndash;&amp;gt; Edit &amp;ndash;&amp;gt; settings &amp;ndash;&amp;gt; SFTP  &amp;ndash;&amp;gt; Add key file&lt;/p&gt;
+
+&lt;p&gt;Following these step, I was able to create 3 fairly powerful servers, each with 64 cores, 256GB memory and 50GB SSD. Using the foreach and doSNOW  R packages, we can use all the cores in parallel at 100%.  I shut them down when all finished in a few days. It costed less than $200. Yes, the flexibility and affordability of computing are here. It is less complicated to use than you think.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Blogdown notes</title>
+      <link>/post/blogdown-notes/</link>
+      <pubDate>Mon, 02 Jul 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/blogdown-notes/</guid>
+      <description>&lt;p&gt;To start a new post, choose &amp;ldquo;New post&amp;rdquo; from Addins.
+Use Markdown for texts. If it contains R markdown, rendering plots, etc, use RMarkdown, not Rmd.&lt;/p&gt;
+
+&lt;p&gt;Click &amp;ldquo;Build Websites&amp;rdquo;&lt;/p&gt;
+
+&lt;p&gt;Git GUI.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
       <title>DESeq2 experimental design and interpretation</title>
       <link>/post/deseq2-experimental-design-and-interpretation/</link>
       <pubDate>Mon, 02 Jul 2018 00:00:00 +0000</pubDate>
@@ -1778,6 +1955,152 @@ kable(res[1:5,-(3:4)])
     </item>
     
     <item>
+      <title>Forecasting mass shootings</title>
+      <link>/post/forecasting-mass-shootings/</link>
+      <pubDate>Mon, 02 Jul 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/forecasting-mass-shootings/</guid>
+      <description>&lt;p&gt;Using the mass shooting data from &lt;a href=&#34;https://www.motherjones.com/politics/2012/12/mass-shootings-mother-jones-full-data/&#34;&gt;Mother Jones website,&lt;/a&gt; I tried to forecast the number of mass shoottings and total fatalities in the rest of 2018. Some of the R scripts are from this &lt;a href=&#34;http://a-little-book-of-r-for-time-series.readthedocs.io/en/latest/src/timeseries.html&#34;&gt;website.&lt;/a&gt; Please let me know if I there is any error. I am not an expert on time series analysis. &lt;a href=&#34;www.twitter.com&#34;&gt;Twitter&lt;/a&gt; &lt;span class=&#34;citation&#34;&gt;@StevenXGe&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;In recent years, mass shootings are becomming more frequent and more deadly. The models suggest for the rest of 2018, there probably be about 6 more shootings, killing about 59 people in the U.S.&lt;/p&gt;
+&lt;div id=&#34;data&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Data&lt;/h1&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;url = &amp;quot;https://docs.google.com/spreadsheet/pub?key=0AswaDV9q95oZdG5fVGJTS25GQXhSTDFpZXE0RHhUdkE&amp;amp;output=csv&amp;quot;
+x = read.csv(url)
+colnames(x)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##  [1] &amp;quot;case&amp;quot;                               
+##  [2] &amp;quot;location&amp;quot;                           
+##  [3] &amp;quot;date&amp;quot;                               
+##  [4] &amp;quot;year&amp;quot;                               
+##  [5] &amp;quot;summary&amp;quot;                            
+##  [6] &amp;quot;Fatalities&amp;quot;                         
+##  [7] &amp;quot;Injured&amp;quot;                            
+##  [8] &amp;quot;total_victims&amp;quot;                      
+##  [9] &amp;quot;Venue&amp;quot;                              
+## [10] &amp;quot;Prior.signs.of.mental.health.issues&amp;quot;
+## [11] &amp;quot;Mental.health...details&amp;quot;            
+## [12] &amp;quot;Weapons.obtained.legally&amp;quot;           
+## [13] &amp;quot;Where.obtained&amp;quot;                     
+## [14] &amp;quot;Type.of.weapons&amp;quot;                    
+## [15] &amp;quot;Weapon.details&amp;quot;                     
+## [16] &amp;quot;Race&amp;quot;                               
+## [17] &amp;quot;Gender&amp;quot;                             
+## [18] &amp;quot;Sources&amp;quot;                            
+## [19] &amp;quot;Mental.Health.Sources&amp;quot;              
+## [20] &amp;quot;latitude&amp;quot;                           
+## [21] &amp;quot;longitude&amp;quot;                          
+## [22] &amp;quot;Type&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;data-cleaning&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Data cleaning&lt;/h1&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;x = x[,c(&amp;quot;date&amp;quot;,&amp;quot;year&amp;quot;,&amp;quot;Fatalities&amp;quot;,&amp;quot;Race&amp;quot;,&amp;quot;Gender&amp;quot;,&amp;quot;Type&amp;quot;)]
+x$Race = gsub(&amp;quot;white&amp;quot;,&amp;quot;White&amp;quot;,as.character(x$Race) )
+x$Race = as.factor(x$Race)
+summary(x)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##         date         year        Fatalities          Race   
+##           : 2   Min.   :1982   Min.   : 3.000   White  :56  
+##  1/17/1989: 1   1st Qu.:1998   1st Qu.: 5.000   black  : 9  
+##  1/28/18  : 1   Median :2009   Median : 6.000   Asian  : 8  
+##  1/30/2006: 1   Mean   :2006   Mean   : 8.313   Black  : 7  
+##  1/6/2017 : 1   3rd Qu.:2015   3rd Qu.: 8.000   Latino : 7  
+##  1/8/2011 : 1   Max.   :2018   Max.   :58.000   Other  : 5  
+##  (Other)  :94   NA&amp;#39;s   :2      NA&amp;#39;s   :2        (Other): 9  
+##            Gender      Type   
+##               : 2        : 2  
+##  Female       : 2   Mass :85  
+##  M            :26   Spree:14  
+##  Male         :70             
+##  Male &amp;amp; Female: 1             
+##                               
+## &lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;x = subset(x,x$year != 2018)
+x$date = as.Date(x$date,&amp;quot;%m/%d/%Y&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;the-number-of-mass-shootings-per-year&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;The number of mass shootings per year&lt;/h1&gt;
+&lt;p&gt;There is no mass shooting in 1983, 1985, and 2002.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;yearly = table(x$year)
+yearly = c(1,0, yearly)
+names(yearly)[1:4]= 1982:1985
+yearly[3]=2
+yearly[4]=0 
+yearly = c(yearly[1:20],0, yearly[21:35])
+names(yearly)[21] = &amp;quot;2002&amp;quot;
+barplot(yearly)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2018-07-02-Forecasting-mass-shootings-2018_files/figure-html/unnamed-chunk-1-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;Clearly, the frequency of mass shootings is increasing in the last 6 years.&lt;/p&gt;
+&lt;div id=&#34;time-series-model&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Time series model&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;series = ts(yearly,start=c(1982)) 
+yforecast = HoltWinters(series, beta=FALSE, gamma=FALSE)
+yforecast&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Holt-Winters exponential smoothing without trend and without seasonal component.
+## 
+## Call:
+## HoltWinters(x = series, beta = FALSE, gamma = FALSE)
+## 
+## Smoothing parameters:
+##  alpha: 0.5024872
+##  beta : FALSE
+##  gamma: FALSE
+## 
+## Coefficients:
+##       [,1]
+## a 8.446514&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;plot(yforecast, main=&amp;quot;Number of mass shootings &amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2018-07-02-Forecasting-mass-shootings-2018_files/figure-html/unnamed-chunk-3-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;The red line is probably the model.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;making-forecast&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Making forecast&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# install.packages(&amp;quot;forecast&amp;quot;)
+library(forecast)
+shottings = forecast(yforecast, h = 1)
+shottings&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##      Point Forecast    Lo 80   Hi 80    Lo 95    Hi 95
+## 2018       8.446514 6.239526 10.6535 5.071217 11.82181&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The model predicts there would be about 8.4 mass shootings this year. Since 2 already happened. There probably would be 6 incidences of mass shooting for the rest of 2018. The 95% confidence interval is between 5 and 11. So it is very likely at least 3 more shootings will occur in 2018.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;total-fatalities-in-2018&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Total fatalities in 2018&lt;/h1&gt;
+&lt;div id=&#34;prepare-data&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Prepare data&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;tem = aggregate(x$Fatalities, by=list(x$year), FUN=sum)
+tem2 = rbind( tem[1,], c(1983,0), tem[2,],c(1985,0),tem[3:18,], c(2002, 0), tem[19:33, ] ) 
+fatalities = tem2[,2]
+names(fatalities) = tem2[,1]
+barplot(fatalities, las=2)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2018-07-02-Forecasting-mass-shootings-2018_files/figure-html/unnamed-chunk-5-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;This data is noisy, but we still see an uptake in total fatalities in the last 10 years.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;series = ts(fatalities,start=c(1982))
+yforecast = HoltWinters(series, beta=FALSE, gamma=FALSE)
+yforecast&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Holt-Winters exponential smoothing without trend and without seasonal component.
+## 
+## Call:
+## HoltWinters(x = series, beta = FALSE, gamma = FALSE)
+## 
+## Smoothing parameters:
+##  alpha: 0.4323295
+##  beta : FALSE
+##  gamma: FALSE
+## 
+## Coefficients:
+##       [,1]
+## a 79.90564&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;plot(yforecast, main=&amp;quot;Total fatalities from mass shooting&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2018-07-02-Forecasting-mass-shootings-2018_files/figure-html/unnamed-chunk-7-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;shottings = forecast(yforecast, h = 1)
+shottings&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##      Point Forecast    Lo 80    Hi 80    Lo 95    Hi 95
+## 2018       79.90564 53.81795 105.9933 40.00795 119.8033&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;So this model predicts that about 80 people will be killed in mass shootings in 2018. Since there were 21 in Florida and Pennsylvania already. The rest of 2018 will see about 59 people getting killed. I hope these are not going to happen in schools.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+    <item>
       <title>I tried Docker</title>
       <link>/post/i-tried-docker/</link>
       <pubDate>Mon, 02 Jul 2018 00:00:00 +0000</pubDate>
@@ -2027,6 +2350,16 @@ shottings
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;So this model predicts that about 80 people will be killed in mass shootings in 2018. Since there were 21 in Florida and Pennsylvania already. The rest of 2018 will see about 59 people getting killed. I hope these are not going to happen in schools.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>R markdown </title>
+      <link>/post/r-markdown/</link>
+      <pubDate>Mon, 02 Jul 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/r-markdown/</guid>
+      <description>&lt;p&gt;rertetdfsad&lt;/p&gt;
 </description>
     </item>
     
@@ -2296,16 +2629,6 @@ git submodule update --init --recursive
       <pubDate>Tue, 01 Sep 2015 00:00:00 -0500</pubDate>
       
       <guid>/publication/person-re-identification/</guid>
-      <description>&lt;p&gt;More detail can easily be written here using &lt;em&gt;Markdown&lt;/em&gt; and $\rm \LaTeX$ math code.&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>Mobile visual clothing search</title>
-      <link>/publication/clothing-search/</link>
-      <pubDate>Mon, 01 Jul 2013 00:00:00 -0500</pubDate>
-      
-      <guid>/publication/clothing-search/</guid>
       <description>&lt;p&gt;More detail can easily be written here using &lt;em&gt;Markdown&lt;/em&gt; and $\rm \LaTeX$ math code.&lt;/p&gt;
 </description>
     </item>

@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="theme" content="hugo-academic">
+  <meta name="generator" content="Hugo 0.42.2" />
+  <meta name="author" content="Lena Smith">
+
+  
+  
+  
+  
+    
+      
+    
+  
+  <meta name="description" content="Use Amazon EC2 to run large R computing on the cheap
+Wednesday, July 04, 2018
+9:19 PM
+Spot instances on Amazon allows researchers to compute with very low cost. Here I will show you how to start an virtual machine on Amazon,
+establish connection via SSH, and set up the brand-new linux machine to run R using docker images.
+ Create account and sign in to Amazon EC2. You will need a password  Screen clipping taken: 7/5/2018 9:52 AM">
+
+  
+  <link rel="alternate" hreflang="en-us" href="/post/use-amazon-ec2-to-runlarge-r-computing-jobs-for-cheap/">
+
+  
+
+
+  
+
+  
+  
+  <meta name="theme-color" content="#0095eb">
+  
+  
+  
+  
+    
+  
+  
+    
+    
+      
+        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+      
+    
+  
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha512-6MXa8B6uaO18Hid6blRMetEIoPqHf7Ux1tnyIQdpt9qI5OACx7C+O3IVTr98vwGnlcg0LOLa02i9Y1HpVhlfiw==" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.8.6/css/academicons.min.css" integrity="sha256-uFVgMKfistnJAfoCUQigIl+JfUaP47GrRKjf6CTPVmw=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha512-SfTiTlX6kk+qitfevl/7LibUOeJWlt9rbyDn92a1DqWOw9vWG2MFoays0sgObmWazO5BQPiFucnnEAjpAB+/Sw==" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" integrity="sha256-ygkqlh3CYSUri3LhQxzdcm0n1EQvH2Y+U5S2idbLtxs=" crossorigin="anonymous">
+  
+  
+  
+  
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Montserrat:400,700%7cRoboto:400,400italic,700%7cRoboto&#43;Mono">
+  
+  <link rel="stylesheet" href="/styles.css">
+  
+
+  
+  
+  
+
+  
+  <link rel="alternate" href="/index.xml" type="application/rss+xml" title="Academic">
+  <link rel="feed" href="/index.xml" type="application/rss+xml" title="Academic">
+  
+
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="icon" type="image/png" href="/img/icon.png">
+  <link rel="apple-touch-icon" type="image/png" href="/img/icon-192.png">
+
+  <link rel="canonical" href="/post/use-amazon-ec2-to-runlarge-r-computing-jobs-for-cheap/">
+
+  <meta property="twitter:card" content="summary_large_image">
+  
+  <meta property="twitter:site" content="@GeorgeCushen">
+  <meta property="twitter:creator" content="@GeorgeCushen">
+  
+  <meta property="og:site_name" content="Academic">
+  <meta property="og:url" content="/post/use-amazon-ec2-to-runlarge-r-computing-jobs-for-cheap/">
+  <meta property="og:title" content="Use Amazon EC2 to runlarge R computing jobs for cheap | Academic">
+  <meta property="og:description" content="Use Amazon EC2 to run large R computing on the cheap
+Wednesday, July 04, 2018
+9:19 PM
+Spot instances on Amazon allows researchers to compute with very low cost. Here I will show you how to start an virtual machine on Amazon,
+establish connection via SSH, and set up the brand-new linux machine to run R using docker images.
+ Create account and sign in to Amazon EC2. You will need a password  Screen clipping taken: 7/5/2018 9:52 AM">
+  <meta property="og:locale" content="en-us">
+  
+  <meta property="article:published_time" content="2018-07-05T00:00:00&#43;00:00">
+  
+  <meta property="article:modified_time" content="2018-07-05T00:00:00&#43;00:00">
+  
+
+  
+
+  
+
+  <title>Use Amazon EC2 to runlarge R computing jobs for cheap | Academic</title>
+
+</head>
+<body id="top" data-spy="scroll" data-target="#toc" data-offset="71" >
+
+<nav class="navbar navbar-default navbar-fixed-top" id="navbar-main">
+  <div class="container">
+
+    
+    <div class="navbar-header">
+      
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+              data-target=".navbar-collapse" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      
+      <a class="navbar-brand" href="/">Academic</a>
+    </div>
+
+    
+    <div class="collapse navbar-collapse">
+
+      
+      
+      <ul class="nav navbar-nav navbar-right">
+        
+
+        
+        
+        
+        
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/#about">
+            
+            <span>Home</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+        
+        
+        
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/#publications_selected">
+            
+            <span>Publications</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+        
+        
+        
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/#posts">
+            
+            <span>Posts</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+        
+        
+        
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/#projects">
+            
+            <span>Projects</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+        
+        
+        
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/#teaching">
+            
+            <span>Teaching</span>
+            
+          </a>
+        </li>
+
+        
+        
+
+        
+        
+        
+        
+        
+          
+        
+
+        <li class="nav-item">
+          <a href="/#contact">
+            
+            <span>Contact</span>
+            
+          </a>
+        </li>
+
+        
+        
+      
+
+      
+      </ul>
+
+    </div>
+  </div>
+</nav>
+
+
+<article class="article" itemscope itemtype="http://schema.org/Article">
+
+  
+
+
+  <div class="article-container">
+    <h1 itemprop="name">Use Amazon EC2 to runlarge R computing jobs for cheap</h1>
+
+    
+
+<div class="article-metadata">
+
+  
+
+  <span class="article-date">
+    
+    <meta content="2018-07-05 00:00:00 &#43;0000 UTC" itemprop="datePublished">
+    <time datetime="2018-07-05 00:00:00 &#43;0000 UTC" itemprop="dateModified">
+      Jul 5, 2018
+    </time>
+  </span>
+  <span itemscope itemprop="author publisher" itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="Lena Smith">
+  </span>
+
+  
+  <span class="middot-divider"></span>
+  <span class="article-reading-time">
+    4 min read
+  </span>
+  
+
+  
+  
+
+  
+  
+  
+  <span class="middot-divider"></span>
+  <span class="article-categories">
+    <i class="fa fa-folder"></i>
+    
+    <a href="/categories/r/">R</a
+    >
+    
+  </span>
+  
+  
+
+  
+  
+<div class="share-box" aria-hidden="true">
+  <ul class="share">
+    <li>
+      <a class="twitter"
+         href="https://twitter.com/intent/tweet?text=Use%20Amazon%20EC2%20to%20runlarge%20R%20computing%20jobs%20for%20cheap&amp;url=%2fpost%2fuse-amazon-ec2-to-runlarge-r-computing-jobs-for-cheap%2f"
+         target="_blank" rel="noopener">
+        <i class="fa fa-twitter"></i>
+      </a>
+    </li>
+    <li>
+      <a class="facebook"
+         href="https://www.facebook.com/sharer.php?u=%2fpost%2fuse-amazon-ec2-to-runlarge-r-computing-jobs-for-cheap%2f"
+         target="_blank" rel="noopener">
+        <i class="fa fa-facebook"></i>
+      </a>
+    </li>
+    <li>
+      <a class="linkedin"
+         href="https://www.linkedin.com/shareArticle?mini=true&amp;url=%2fpost%2fuse-amazon-ec2-to-runlarge-r-computing-jobs-for-cheap%2f&amp;title=Use%20Amazon%20EC2%20to%20runlarge%20R%20computing%20jobs%20for%20cheap"
+         target="_blank" rel="noopener">
+        <i class="fa fa-linkedin"></i>
+      </a>
+    </li>
+    <li>
+      <a class="weibo"
+         href="http://service.weibo.com/share/share.php?url=%2fpost%2fuse-amazon-ec2-to-runlarge-r-computing-jobs-for-cheap%2f&amp;title=Use%20Amazon%20EC2%20to%20runlarge%20R%20computing%20jobs%20for%20cheap"
+         target="_blank" rel="noopener">
+        <i class="fa fa-weibo"></i>
+      </a>
+    </li>
+    <li>
+      <a class="email"
+         href="mailto:?subject=Use%20Amazon%20EC2%20to%20runlarge%20R%20computing%20jobs%20for%20cheap&amp;body=%2fpost%2fuse-amazon-ec2-to-runlarge-r-computing-jobs-for-cheap%2f">
+        <i class="fa fa-envelope"></i>
+      </a>
+    </li>
+  </ul>
+</div>
+
+
+  
+
+</div>
+
+
+    <div class="article-style" itemprop="articleBody">
+      <p>Use Amazon EC2 to run large R computing on the cheap</p>
+
+<p>Wednesday, July 04, 2018</p>
+
+<p>9:19 PM</p>
+
+<p>Spot instances on Amazon allows researchers to compute with very low cost. Here I will show you how to start an virtual machine on Amazon,</p>
+
+<p>establish connection via SSH, and set up the brand-new linux machine to run R using docker images.</p>
+
+<ol>
+<li>Create account and sign in to Amazon EC2. You will need a password</li>
+</ol>
+
+<p><img src="Use%20Amazon%20EC2%20to%20run%20large%20R%20computing%20on%20the%20cheap2_files/image002.jpg" alt="Machine generated alternative text:
+AWS Management Consc 
+C Secure 
+Scholar 
+Apps 
+x 
+https://us-east-2.console.aws.amazon.com/console/home?region=us-east-2# 
+iDEP ShinßC Bookmarks Nature Science 
+DreamBox Learning 
+Campus Parent Port 
+aws 
+Services 
+Resource Groups 
+AWS services 
+Find a service by name or feature (for example, EC2: S3 ormn.•l, storage). 
+v Recently visited services 
+o 
+EC2 
+&gt; All services 
+Build a solution 
+Get started with simple wizards and automated workflows. 
+Launch a virtual machine 
+With EC2 
+—2-3 minutes 
+Build a web app 
+With Elastic Beanstalk 
+minutes 
+Billing 
+Build using virtual servers 
+With Lightsail 
+—1-2 minutes " /></p>
+
+<p>Screen clipping taken: 7/5/2018 9:52 AM</p>
+
+<ol>
+<li>Create a key pair using the menu on the left in the NETWORK &amp; SECURITY. A file named XXX.pem will be downloaded automatically. I called it key1.pem.</li>
+</ol>
+
+<p><img src="Use%20Amazon%20EC2%20to%20run%20large%20R%20computing%20on%20the%20cheap2_files/image004.jpg" alt="Machine generated alternative text:
+aws 
+EC2 Dashboard 
+Events 
+Tags 
+Reports 
+Limits 
+'I INSTANCES 
+Instances 
+Launch Templates 
+pot Requests 
+Reserve nstances 
+Dedicated Hosts 
+'I IMAGES 
+AMIS 
+Bundle Tasks 
+ELASTIC BLOCK 
+STORE 
+Volumes 
+Snapshots 
+NETWORK &amp; 
+SECURITY 
+Security Groups 
+Elastic IPS 
+Services 
+Resource Groups 
+Resources 
+You are using the following Amazon EC2 resources in the IJS East (Ohio) region: 
+0 
+2 
+2 
+0 
+Running Instances 
+Dedicated Hosts 
+Volumes 
+Key Pairs 
+Placement Groups 
+O Elastic IPs 
+0 Snapshots 
+0 Load Balancers 
+2 Security Groups 
+Learn more about the latest in AWS Compute trom AWS re:lnvent 2017 by viewing the EC2 Videos. 
+Create Instance 
+To start using Amazon EC2 you will want to launch a virtual server, known as an Amazon EC2 instance. 
+Launch Instance 
+Note: Your instances will launch in the US East (Ohio) region 
+Service Health 
+Service Status: 
+US East (Ohi0): 
+e 
+This service is operating normally 
+Availability Zone Status: 
+us-east-2a: 
+Availability zone is operating normally 
+C* 
+Scheduled Events 
+US East (OhiO): 
+No events 
+p 
+nt Groups 
+Key Pairs 
+Neuork Interfaces " /></p>
+
+<p>Screen clipping taken: 7/5/2018 9:55 AM</p>
+
+<ol>
+<li>Start a virtual machine by clicking on the Spot Requests on the left. Instances initiated with Spot Requests are much cheaper than regular instances. They are computers at idle. They can be terminated abruptly though.</li>
+</ol>
+
+<p><img src="Use%20Amazon%20EC2%20to%20run%20large%20R%20computing%20on%20the%20cheap2_files/image006.jpg" alt="Machine generated alternative text:
+aws 
+EC2 Dashboard 
+Events 
+Tags 
+Reports 
+Limits 
+'I INSTANCES 
+Instances 
+Launch Templates 
+Spot Requests 
+Reserved Instances 
+Dedicated Hosts 
+Services 
+Resource Groups 
+Request Spot Instances 
+•r I Request type: all. 
+Spot Advisor 
+Actions • 
+State: all. Search by keyword 
+Request Id 
+str-3C5ö0363-bd30- 
+str-96273G8-ae02-. 
+str-31öba085-4t9d-. 
+str-75179eta-de1c-._ 
+str-1883egas-3tö4- 
+Request type 
+fleet 
+fleet 
+fleet 
+Instance Wpe 
+m4.xlarge 
+c4.xIarge 
+r3.8x1arge 
+r3.8x1arge 
+r3.8x1arge 
+Pricing History 
+State 
+cancelled 
+cancelled 
+cancelled 
+cancelled 
+cancelled 
+Capacity " /></p>
+
+<p>Screen clipping taken: 7/5/2018 10:01 AM</p>
+
+<ol>
+<li>Start the &ldquo;Spot Advisor&rdquo; and enter your request. An 32-core instance with 244GB memory costs $0.29 per hour, or about $7 per day.</li>
+</ol>
+
+<p><img src="Use%20Amazon%20EC2%20to%20run%20large%20R%20computing%20on%20the%20cheap2_files/image008.jpg" alt="Machine generated alternative text:
+Spot Advisor 
+What kind of application or task will these instances support? 
+Default 
+Obtain instances ot a consistent 
+CPU/memory ratio at the best 
+price 
+Web Service 
+Secure and maintain capacity 
+using instances ot a similar size to 
+run your Web service 
+MapReduce job 
+Acquire low-cost, single AZ 
+instances for your MapReduce job 
+e.g. Hadoop, Spark, etc 
+Enter your compute specifications (minimal requirements) and we'll recommend a fleet 
+CPU 
+32 
+Memory GiB 
+30 
+Platform 
+Linux 
+Availability Zone 
+Any 
+t required 
+Or inheri values trom an instance type 
+Your recommended fleet 
+The selected instance pools will be used interchangeably to fulfill and maintain your specified compute requirements. The actual instance pools and quantities used trom this fleet are dynamic 
+maintained and that your specified fulfillment priority is honored. 
+Instance Wpe 
+r3.8x1arge 
+c4.8xlarge 
+r4.16xlarge 
+m5d.24xIarge 
+m4.16xlarge 
+c5d.9xlarge 
+r4.8x1arge 
+c5.9xlarge 
+@=your base compute unit 
+32 vCPU, 244Gi8 
+36 vCPU, 6DGi3 
+64 vCPU, 488Gi8 
+ga vCPU, 384Gi8 
+64 vCPU, 256Gi8 
+36 vCPU, 72Gi3 
+32 vCPU, 244Gi8 
+36 vCPU, 72Gi3 
+Availability Zones 
+us-east-2a, us-east-2ö, us-east-2c 
+Average Spot price 
+so.2915tnr 
+so.2927tnr 
+so. 62921M 
+so. 98531M 
+so. 67851M 
+so. 34731M 
+so.3488tnr 
+so. 36451M 
+Estimated fleet price 
+$0.329 n-,r 
+Interrul 
+Low 
+Low 
+Low 
+Low 
+Low 
+Low 
+Low 
+Low 
+Low 
+Total (15 instance pools) 
+Strong breadth of instance types to tulfill}maintain your " /></p>
+
+<p>Screen clipping taken: 7/5/2018 9:52 AM</p>
+
+<ol>
+<li>Configure instance as below.</li>
+</ol>
+
+<p>a. Choose Ubuntu Server 16.04</p>
+
+<p>b. Increase EBS volumnes to 20 GB from the default 8GB</p>
+
+<p>c. Make sure the key pair you created is used.</p>
+
+<p>d. Security groups: choose launch-wizard-1.</p>
+
+<p>e. Request valid until: 7/20/2018</p>
+
+<ol>
+<li>Click Launch and wait a few minutes for Amazon to fulfill this request.</li>
+</ol>
+
+<p><img src="Use%20Amazon%20EC2%20to%20run%20large%20R%20computing%20on%20the%20cheap2_files/image010.jpg" alt="Machine generated alternative text:
+Request Spot Instances 
+T I Request type: all. 
+Spot Advisor 
+Actions • 
+State: all. Search by keyword 
+Pricing History 
+State 
+active 
+cancelled 
+« &lt; Viewing1t070t7 requests &gt; » 
+Request Id 
+str-75143966-db26-_ 
+str-3C5ö0363-bd30- 
+Request type 
+fleet 
+Instance Wpe 
+m4.xlarge 
+Capacity 
+lofl 
+Status 
+tultllled 
+Persistence 
+maintain 
+maintain 
+Created 
+a minute ago 
+12 hours ago 
+Max price 
+S2.66 
+so. 05 " /></p>
+
+<p>Screen clipping taken: 7/5/2018 10:13 AM</p>
+
+<ol>
+<li>Once fulfilled, the instance is listed under Instances</li>
+</ol>
+
+<p><img src="Use%20Amazon%20EC2%20to%20run%20large%20R%20computing%20on%20the%20cheap2_files/image012.jpg" alt="Machine generated alternative text:
+Launch Instance 
+Connect 
+Actions v 
+Q Filter by tags and attributes or search by keyword 
+Name 
+Instance ID 
+-OObc097803bf407b4 
+Instance Type 
+c48xlarge 
+Availability Zone 
+us-east-2a 
+Instance State 
+runnin 
+Status Checks 
+Initializing 
+Alarm 
+None 
+Status 
+Public DNS (IPv4) 
+ec2-18-191-240-1S.us- 
+lt020t2 
+IPv4 Public IP 
+18.191240.16 " /></p>
+
+<p>Screen clipping taken: 7/5/2018 10:14 AM</p>
+
+<ol>
+<li>To connect the instance, click on the Connect button (above), information like this will be shown.</li>
+</ol>
+
+<p><img src="Use%20Amazon%20EC2%20to%20run%20large%20R%20computing%20on%20the%20cheap2_files/image014.jpg" alt="Machine generated alternative text:
+Connect To Your Instance 
+x 
+I would like to connect with 
+To access your instance: 
+A standalone SSH client 
+O 
+A Java SSH Client directly from my browser (Java required) 
+1. Open an SSH client (find out how to connect using PuTTY) 
+2 Locate your private key file (keyl .pem). The wizard automatically detects the key you used to 
+launch the instance. 
+3 Your key must not be publicly viewable tor SSH to work. use this command if needed: 
+chmod 400 keyl.pem 
+4. Connect to your instance using its Public DNS 
+ec2-18-191-240-15.us-east-2.compute.amazonaws.com 
+Example: 
+ssh -i &quot;keyl.pem&quot; ubuntu@ec2-18-191-24e-15.us-east-2.compute.amazonaws.com 
+Please note that in most cases the username above will be correct, however please ensure 
+that you read your AMI usage instructions to ensure that the AMI owner nas not changed the 
+default AMI username. 
+It you need any assistance connecting to your instance, please see our connection documentation " /></p>
+
+<p>Screen clipping taken: 7/5/2018 10:16 AM</p>
+
+<ol>
+<li>Download Puttygen.exe to convert the key1.pem we got from Amazon to a private key.</li>
+</ol>
+
+<p><img src="Use%20Amazon%20EC2%20to%20run%20large%20R%20computing%20on%20the%20cheap2_files/image016.jpg" alt="Machine generated alternative text:
+PuTTY Key Generator 
+File Key Conversions Help 
+Public key for pasting nto OpenSSH authohzad_kays file 
+' — 'llZ*M5vi 
+PALS S*zLlDsFfqhR Mgs z 
+•••n-38dlgLDoQLFkUMLytAVCq3481GFru 
+imported-opensshkay 
+Key fingerprint 
+Key comment 
+Key p assphrase 
+Confirm p assphrase 
+ssh«a 2048 Id 85 8d:a8c8fa 64 aa c3S8 1 1 &amp;ebQ2cd Oa 
+imported-open sshkay 
+Generate a public/private key pair 
+Isad an existing private key file 
+Save the generated key 
+Parameters 
+Type of key to generate: 
+@ RSA 
+O 
+OSA 
+Number of bits in a generated key 
+O 
+ECDSA 
+Sa ve public key 
+O 
+ED25519 
+Generate 
+Load 
+Save phvate key 
+O 
+SSH-I (RSA) " /></p>
+
+<p>Screen clipping taken: 7/5/2018 10:18 AM</p>
+
+<ol>
+<li>Download and start Putty.exe</li>
+</ol>
+
+<p>a. Copy and paste the public DNAs</p>
+
+<p><strong>ec2-18-191-240-15.us-east-2.compute.amazonaws.com</strong></p>
+
+<p><strong>2.</strong> <strong>Under Connection and Data, enter the user name: ubuntu</strong></p>
+
+<p><strong>3.</strong> <strong>Under Connection -&gt; SSH -&gt; Auth, upload the converted private key file.</strong></p>
+
+<p><strong>4.</strong> <strong>Save this session info as EC2-spot3, so that next time we can easily connect to this instances without going through a-c.</strong></p>
+
+<p><img src="Use%20Amazon%20EC2%20to%20run%20large%20R%20computing%20on%20the%20cheap2_files/image018.jpg" alt="Machine generated alternative text:
+PuTTY Configuration 
+Category 
+Logging 
+Terminal 
+Keybo ard 
+Window 
+Behaviour 
+Translation 
+Colouæ 
+P ropy 
+Telnet 
+Rlogin 
+Ci har 
+Basic options for your Pu TTY session 
+Specify the destination you want to connect to 
+15us-sast-2compute co 
+Connection 
+O 
+C) Telnet C) Rlogin @ 
+Isad save or delete a stored session 
+-spot 
+Default Settings 
+EC2 
+EC2Rest2 
+Gene 
+bigjack 
+blackjack 
+ge4aborg 
+Close window on exit 
+O 
+Always C) Never 
+O 
+Load 
+Save 
+@ Only on clean exit 
+Open " /></p>
+
+<p>Screen clipping taken: 7/5/2018 10:25 AM</p>
+
+<ol>
+<li>We are connected to the instance!!!</li>
+</ol>
+
+<p>![Machine generated alternative text:
+ubuntu@ip-172-31-15-170•. -
+Welcome to Ubuntu 16.04. 3 LIS (GNU/Linux 4.4. O
+-1049
+. com
+—aws x86 64)
+Document at ion :
+Management :
+Support :
+https : / / help . ubuntu . com
+https : / / landscape . canonical
+ht Cps : / / ubuntu . com/advantage
+Get cloud support with Ubuntu Advantage Cloud Guest :
+ht Cp : / /www . ubuntu . com/business/services/cloud
+O packages can be updated.
+O updates are security updates.
+The programs included with the Ubuntu system are free software ;
+the exact distribution terms for each program are described in the
+individual files in /usr/share/doc/•/copyright .
+Ubuntu comes with ABSOLUTELY NO WARRANTY, to the extent permitted by
+appli cable law.
+To run a corunand as
+See &ldquo;man sudo root&rdquo;
+admini strator (user
+for details.
+170:-$ C]
+&ldquo; root &rdquo; )
+use
+&ldquo; s udo &lt; &ldquo; ](Use%20Amazon%20EC2%20to%20run%20large%20R%20computing%20on%20the%20cheap2_files/image020.jpg)</p>
+
+<p>Screen clipping taken: 7/5/2018 10:26 AM</p>
+
+<ol>
+<li>To copy files to this instance, use FileZilla and follow directions here: <a href="http://angus.readthedocs.io/en/2014/amazon/transfer-files-between-instance.html" target="_blank">http://angus.readthedocs.io/en/2014/amazon/transfer-files-between-instance.html</a></li>
+</ol>
+
+<p>Briefly,</p>
+
+<p>a. Go to Edit -&gt; Settings to add the key1.pem file as security key</p>
+
+<p>b. File -&gt; Site Manager -&gt; New Site:</p>
+
+<p>c. Change Protocol to SFTP; paste host name , Change Logon Type to Normal; and enter the user name &ldquo;ubuntu&rdquo;.</p>
+
+<p>m. Install Docker</p>
+
+<p>sudo  apt-get update</p>
+
+<p>sudo  apt-get install \<br />
+ apt-transport-https \<br />
+ ca-certificates \<br />
+ curl \<br />
+ software-properties-common</p>
+
+<p>curl -fsSL <a href="https://download.docker.com/linux/ubuntu/gpg" target="_blank">https://download.docker.com/linux/ubuntu/gpg</a> | sudo  apt-key add -</p>
+
+<p>sudo  add-apt-repository \<br />
+ &ldquo;deb [arch=amd64] <a href="https://download.docker.com/linux/ubuntu" target="_blank">https://download.docker.com/linux/ubuntu</a> \ $(lsb_release -cs) \<br />
+ stable&rdquo;</p>
+
+<p>sudo  apt-get update</p>
+
+<p>sudo  apt-get install docker-ce</p>
+
+<p>From &lt;<a href="https://docs.docker.com/install/linux/docker-ce/ubuntu/#install-using-the-repository" target="_blank">https://docs.docker.com/install/linux/docker-ce/ubuntu/#install-using-the-repository</a>&gt;</p>
+
+<ol>
+<li>Define your docker image. Save this as a file called: Dockerfile, in a folder such as /home/ubuntu/dockers/</li>
+</ol>
+
+<p>FROM bioconductor/release_core2</p>
+
+<p># <a href="https://www.bioconductor.org/help/docker/" target="_blank">https://www.bioconductor.org/help/docker/</a></p>
+
+<p># install Bioconductor packages</p>
+
+<p>RUN R -e &lsquo;source(&ldquo;<a href="https://bioconductor.org/biocLite.R&quot;" target="_blank">https://bioconductor.org/biocLite.R&quot;</a>); biocLite(c(&ldquo;GO.db&rdquo;, &ldquo;GOstats&rdquo;), suppressUpdates = T)&rsquo;</p>
+
+<ol>
+<li>Create image called mybioconductor</li>
+</ol>
+
+<p><strong>sudo docker build -t mybioconductor .</strong></p>
+
+<ol>
+<li>Create data folder</li>
+</ol>
+
+<p>mkdir data</p>
+
+<ol>
+<li>Start Bioconductor Docker container instance called bio2. The /home/ubuntu/data folder visible in the docker container as /data</li>
+</ol>
+
+<p>sudo docker run -v /home/ubuntu/data:/data &ndash;name bio2 -t mybioconductor</p>
+
+<ol>
+<li>Within the container, you now has most recent R and Bioconductor. Note that you are logged in as root in the container 9c4b9c5d1492.</li>
+</ol>
+
+<p>R</p>
+
+<p><img src="Use%20Amazon%20EC2%20to%20run%20large%20R%20computing%20on%20the%20cheap2_files/image022.jpg" alt="Machine generated alternative text:
+ubuntu@ip-172-31-15-170: —'dockers 
+CONTAINER ID 
+ubuntu@ip-172-31-1s-170. 
+• —/dockers$ 
+CPU * 
+sudo docker run 
+MEM USAGE / LIMIT MEM 
+— name i 02 
+—rm —ti —v / home/ubu 
+R version 
+Copyri ght 
+Plat form : 
+R is free 
+3. s. o (2018-04-23) 
+— &quot;Joy in Playing&quot; 
+(C) 2018 The R Foundation for Statistical Computing 
+x86 64 (64 —bit) 
+software and comes with ABSOLUTELY NO WARRANTY. 
+You are welcome to redistribute it under certain conditions . 
+Type 'license O ' or for distribution details. 
+R is a collaborative project with many contributors . 
+Type ' contributors O ' for more information and 
+' citation O' on how to cite R or R packages in publications . 
+Type 'demo() for some demos, 'help O for on—line help, or 
+'help. start O ' for an HTML browser interface to help. 
+Type to quit R. 
+Bioconductor version 3 . 7 (Bioclnstaller I . 30 . O) 
+?biocLite 
+for help " /></p>
+
+<ol>
+<li>To run large R jobs in the background use nohup</li>
+</ol>
+
+<p>Nohup R CMD BATCH myScript.R &gt; nohup.out &amp;</p>
+
+<ol>
+<li>It is safe to exit the container. To go back to the container:</li>
+</ol>
+
+<p>sudo exec -it bio2 /bin/bash</p>
+
+    </div>
+
+    
+
+
+<div class="article-tags">
+  
+  <a class="btn btn-primary btn-outline" href="/tags/cloud-computing/">Cloud computing</a>
+  
+</div>
+
+
+
+
+    
+    
+
+    
+
+    
+
+
+  </div>
+</article>
+
+<footer class="site-footer">
+  <div class="container">
+    <p class="powered-by">
+
+      &copy; 2018 &middot; 
+
+      Powered by the
+      <a href="https://sourcethemes.com/academic/" target="_blank" rel="noopener">Academic theme</a> for
+      <a href="https://gohugo.io" target="_blank" rel="noopener">Hugo</a>.
+
+      <span class="pull-right" aria-hidden="true">
+        <a href="#" id="back_to_top">
+          <span class="button_icon">
+            <i class="fa fa-chevron-up fa-2x"></i>
+          </span>
+        </a>
+      </span>
+
+    </p>
+  </div>
+</footer>
+
+
+<div id="modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close btn-large" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Cite</h4>
+      </div>
+      <div>
+        <pre><code class="modal-body tex"></code></pre>
+      </div>
+      <div class="modal-footer">
+        <a class="btn btn-primary btn-outline js-copy-cite" href="#" target="_blank">
+          <i class="fa fa-copy"></i> Copy
+        </a>
+        <a class="btn btn-primary btn-outline js-download-cite" href="#" target="_blank">
+          <i class="fa fa-download"></i> Download
+        </a>
+        <div id="modal-error"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+    
+
+    
+
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js" integrity="sha512-3P8rXCuGJdNZOnUx/03c1jOTnMn3rP63nBip5gOP2qmUh5YAdVAvFZ1E+QLZZbC1rtMrQb+mah3AfYW11RUrWA==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.3/imagesloaded.pkgd.min.js" integrity="sha512-umsR78NN0D23AzgoZ11K7raBD+R6hqKojyBZs1w8WvYlsI+QuKRGBx3LFCwhatzBunCjDuJpDHwxD13sLMbpRA==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha512-iztkobsvnjKfAtTNdHkGVjAYTrrtlC7mGp/54c40wowO7LhURYl3gVzzcEqGl/qKXQltJ2HwMrdLcNUdo+N/RQ==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.4/isotope.pkgd.min.js" integrity="sha512-VDBOIlDbuC4VWxGJNmuFRQ0Li0SKkDpmGyuhAG5LTDLd/dJ/S0WMVxriR2Y+CyPL5gzjpN4f/6iqWVBJlht0tQ==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js" integrity="sha256-X5PoE3KU5l+JcX+w09p/wHl9AzK333C4hJ2I9S5mD4M=" crossorigin="anonymous"></script>
+    
+    
+    <script src="/js/hugo-academic.js"></script>
+    
+
+    
+    
+      
+      
+      <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js" integrity="sha256-/BfiIkHlHoVihZdc6TFuj7MmJ0TWcWsMXkeDFwhi0zw=" crossorigin="anonymous"></script>
+      
+
+      
+
+      
+
+      <script>hljs.initHighlightingOnLoad();</script>
+    
+
+    
+    
+
+  </body>
+</html>
+

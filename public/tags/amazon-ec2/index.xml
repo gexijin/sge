@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Amazon EC2 on Academic</title>
+    <link>/tags/amazon-ec2/</link>
+    <description>Recent content in Amazon EC2 on Academic</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>&amp;copy; 2018</copyright>
+    <lastBuildDate>Thu, 05 Jul 2018 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/tags/amazon-ec2/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Using Amazon EC2 to run large data analysis cheaply</title>
+      <link>/post/using-amazon-ec2-to-run-large-data-analysis-cheaply/</link>
+      <pubDate>Thu, 05 Jul 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/using-amazon-ec2-to-run-large-data-analysis-cheaply/</guid>
+      <description>Spot instances on Amazon Elastic Compute Cloud (EC2) allows researchers to compute at very low cost. These are some of the idling machines. One caveat is that they can be terminated at any given time. But this is rather rare. Here I document how you how I started a virtual machine on Amazon, establish a connection via SSH and set up the brand-new Linux machine to run R using docker images.</description>
+    </item>
+    
+  </channel>
+</rss>

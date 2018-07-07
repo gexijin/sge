@@ -13,6 +13,26 @@
     
     
     <item>
+      <title>Using Amazon EC2 to run large data analysis cheaply</title>
+      <link>/post/using-amazon-ec2-to-run-large-data-analysis-cheaply/</link>
+      <pubDate>Thu, 05 Jul 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/using-amazon-ec2-to-run-large-data-analysis-cheaply/</guid>
+      <description>Spot instances on Amazon Elastic Compute Cloud (EC2) allows researchers to compute at very low cost. These are some of the idling machines. One caveat is that they can be terminated at any given time. But this is rather rare. Here I document how you how I started a virtual machine on Amazon, establish a connection via SSH and set up the brand-new Linux machine to run R using docker images.</description>
+    </item>
+    
+    <item>
+      <title>Blogdown notes</title>
+      <link>/post/blogdown-notes/</link>
+      <pubDate>Mon, 02 Jul 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/blogdown-notes/</guid>
+      <description>To start a new post, choose &amp;ldquo;New post&amp;rdquo; from Addins. Use Markdown for texts. If it contains R markdown, rendering plots, etc, use RMarkdown, not Rmd.
+Click &amp;ldquo;Build Websites&amp;rdquo;
+Git GUI.</description>
+    </item>
+    
+    <item>
       <title>DESeq2 experimental design and interpretation</title>
       <link>/post/deseq2-experimental-design-and-interpretation/</link>
       <pubDate>Mon, 02 Jul 2018 00:00:00 +0000</pubDate>
@@ -20,6 +40,16 @@
       <guid>/post/deseq2-experimental-design-and-interpretation/</guid>
       <description>Update. 11/13/17 Thanks to Mike Love for pointing out an error. This is just my understanding. There maybe other errors.
 To allow complex study designs in iDEP(http://ge-lab.org/idep/), I tried to understand how factoral models are built and the desired results are extracted from DESeq2. The following is based on the help document from the resutls( ) function in DESeq2, plus some of Mike Love&amp;rsquo;s answers to questions from users.</description>
+    </item>
+    
+    <item>
+      <title>Forecasting mass shootings</title>
+      <link>/post/forecasting-mass-shootings/</link>
+      <pubDate>Mon, 02 Jul 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/forecasting-mass-shootings/</guid>
+      <description>Using the mass shooting data from Mother Jones website, I tried to forecast the number of mass shoottings and total fatalities in the rest of 2018. Some of the R scripts are from this website. Please let me know if I there is any error. I am not an expert on time series analysis. Twitter @StevenXGe
+In recent years, mass shootings are becomming more frequent and more deadly. The models suggest for the rest of 2018, there probably be about 6 more shootings, killing about 59 people in the U.</description>
     </item>
     
     <item>
@@ -41,6 +71,15 @@ sudo docker login -u gexijin sudo docker run --name=my-r-base --rm -ti -v /home/
       <guid>/post/predict-mass-shootings/</guid>
       <description>Using the mass shooting data from Mother Jones website, I tried to forecast the number of mass shoottings and total fatalities in the rest of 2018. Some of the R scripts are from this website. Please let me know if I there is any error. I am not an expert on time series analysis. Twitter @StevenXGe
 In recent years, mass shootings are becomming more frequent and more deadly. The models suggest for the rest of 2018, there probably be about 6 more shootings, killing about 59 people in the U.</description>
+    </item>
+    
+    <item>
+      <title>R markdown </title>
+      <link>/post/r-markdown/</link>
+      <pubDate>Mon, 02 Jul 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/r-markdown/</guid>
+      <description>rertetdfsad</description>
     </item>
     
     <item>
@@ -72,6 +111,15 @@ hist(iris[,3])  </description>
 
 Key features:
  Easily manage various content including homepage, blog posts, publications, talks, and projects Extensible via color themes and widgets/plugins Write in Markdown for easy formatting and code highlighting, with LaTeX for mathematical expressions Social/academic network linking, Google Analytics, and Disqus comments Responsive and mobile friendly Simple and refreshing one page design Multilingual and easy to customize  Color Themes Academic is available in different color themes and font themes.</description>
+    </item>
+    
+    <item>
+      <title></title>
+      <link>/post/2018-07-05-using-amazon-ec2-to-run-large-data-analysis-cheaply/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2018-07-05-using-amazon-ec2-to-run-large-data-analysis-cheaply/</guid>
+      <description>Using Amazon EC2 to run large data analysis cheaplycode{white-space: pre;}pre:not([class]) {background-color: white;}if (window.hljs) {hljs.configure({languages: []});hljs.initHighlightingOnLoad();if (document.readyState &amp;&amp; document.readyState === &#34;complete&#34;) {window.setTimeout(function() { hljs.initHighlighting(); }, 0);}}h1 {font-size: 34px;}h1.title {font-size: 38px;}h2 {font-size: 30px;}h3 {font-size: 24px;}h4 {font-size: 18px;}h5 {font-size: 16px;}h6 {font-size: 12px;}.</description>
     </item>
     
   </channel>

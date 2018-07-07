@@ -5,7 +5,34 @@
     
     <url>
     
+      <loc>/post/using-amazon-ec2-to-run-large-data-analysis-cheaply/</loc>
+      <lastmod>2018-07-05T00:00:00+00:00</lastmod>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/post/blogdown-notes/</loc>
+      <lastmod>2018-07-02T00:00:00+00:00</lastmod>
+    </url>
+    
+  
+    
+    
+    <url>
+    
       <loc>/post/deseq2-experimental-design-and-interpretation/</loc>
+      <lastmod>2018-07-02T00:00:00+00:00</lastmod>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/post/forecasting-mass-shootings/</loc>
       <lastmod>2018-07-02T00:00:00+00:00</lastmod>
     </url>
     
@@ -24,6 +51,15 @@
     <url>
     
       <loc>/post/predict-mass-shootings/</loc>
+      <lastmod>2018-07-02T00:00:00+00:00</lastmod>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/post/r-markdown/</loc>
       <lastmod>2018-07-02T00:00:00+00:00</lastmod>
     </url>
     
@@ -149,6 +185,14 @@
     
     <url>
     
+      <loc>/post/2018-07-05-using-amazon-ec2-to-run-large-data-analysis-cheaply/</loc>
+    </url>
+    
+  
+    
+    
+    <url>
+    
       <loc>/publication_types/1/</loc>
       <lastmod>2013-07-01T00:00:00-05:00</lastmod>
       <priority>0</priority>
@@ -179,7 +223,37 @@
     
     <url>
     
+      <loc>/tags/amazon-ec2/</loc>
+      <lastmod>2018-07-05T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/tags/blogdown/</loc>
+      <lastmod>2018-07-02T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
       <loc>/categories/</loc>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/categories/cloud-computing/</loc>
+      <lastmod>2018-07-05T00:00:00+00:00</lastmod>
       <priority>0</priority>
     </url>
     

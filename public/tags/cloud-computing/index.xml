@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Cloud computing on Academic</title>
+    <link>/tags/cloud-computing/</link>
+    <description>Recent content in Cloud computing on Academic</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>&amp;copy; 2018</copyright>
+    <lastBuildDate>Thu, 05 Jul 2018 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/tags/cloud-computing/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Use Amazon EC2 to runlarge R computing jobs for cheap</title>
+      <link>/post/use-amazon-ec2-to-runlarge-r-computing-jobs-for-cheap/</link>
+      <pubDate>Thu, 05 Jul 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/use-amazon-ec2-to-runlarge-r-computing-jobs-for-cheap/</guid>
+      <description>Use Amazon EC2 to run large R computing on the cheap
+Wednesday, July 04, 2018
+9:19 PM
+Spot instances on Amazon allows researchers to compute with very low cost. Here I will show you how to start an virtual machine on Amazon,
+establish connection via SSH, and set up the brand-new linux machine to run R using docker images.
+ Create account and sign in to Amazon EC2. You will need a password  Screen clipping taken: 7/5/2018 9:52 AM</description>
+    </item>
+    
+  </channel>
+</rss>
