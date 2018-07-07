@@ -1,5 +1,5 @@
 ---
-title: Using Amazon EC2 to run large data analysis cheaply
+title: Using Amazon EC2 to run large data analyses cheaply
 author: Steven Ge
 date: '2018-07-05'
 slug: using-amazon-ec2-to-run-large-data-analysis-cheaply
@@ -11,9 +11,11 @@ header:
   caption: ''
   image: ''
 ---
-Spot instances on Amazon Elastic Compute Cloud (EC2) allows researchers to compute at very low cost. These are some of the idling machines. One caveat is that they can be terminated at any given time. But this is rather rare. Here I document how you how I started a virtual machine on Amazon, establish a connection via SSH and set up the brand-new Linux machine to run R using docker images. I know little about Linux and networking. So if I can make this work, so can you. This is how I managed to make it work. May not be the best way to do it, as I do not understand a lot of the technology. 
+Spot instances on Amazon Elastic Compute Cloud (EC2) allows researchers to do high performance computing at very low cost. These are spare computing capacities that could be abruptly terminated. But such interruptions are rare, and can be tolerated in scientific research.  For example, a 64-core workstation with 256 GB of memory can be rented at about $0.7 per hour, which is ~80% off regular on-demand prices. You can request 10 of such servers and use them for 5 days and 2 hours and it only cost you a few hundred dollars. 
 
-Main topics covered this tutorial:
+Here I document how I requested an instance (virtual machine) on Amazon EC2, established a connection via SSH, and configured the Linux machine to run R using Docker containers (also new to me). I know little about Linux and networking. If I can make it work, so can you. The instructions below may not be the best way to do things, as I do not understand a lot of the technical details. 
+
+## Main topics covered this tutorial:
 
 * Set up Key Pairs and Security Groups to enable SHH login.
 *	Request spot instance (virtual machine)
@@ -25,7 +27,7 @@ Main topics covered this tutorial:
 * Take a snapshot of a running instance, copy it across regions, and use it to create a volume.
 * Google Compute Engine set-up.
 
-Follow these detailed instructions:
+## These are the steps I took:
 
 1. Create an account and sign in to Amazon EC2. You can use your Amazon account. You will need a credit card number.
 ![EC2](/img/postEC2/image001.png)
@@ -116,7 +118,7 @@ Follow these detailed instructions:
 21. It is safe to exit the container. To go back to the container:
 
     ```
-    sudo exec -it bio2 /bin/bash 
+    sudo docker exec -it bio2 /bin/bash 
     ```
 
 The following steps are optional. 
@@ -143,8 +145,7 @@ Create volume in the exactly the same region such as us-east-2b. These storages 
     sudo mount /dev/xvdf1  /mnt      
     sudo chmod -R a+rwX /mnt    # make folder writable to all
     ```
-
-  Google Compute Engine can be set up following a similar fashion following [instructions](https://www.onepagezen.com/google-cloud-ftp-filezilla-quick-start/)
+5. Google Compute Engine can be set up following a similar fashion following [instructions](https://www.onepagezen.com/google-cloud-ftp-filezilla-quick-start/)
  - Login and create instance at Google  Compute Engine 
  - Download PuttyGen
  - click Generate to create key pairs
@@ -154,9 +155,11 @@ Create volume in the exactly the same region such as us-east-2b. These storages 
  - Filezella --> Edit --> settings --> SFTP  --> Add key file
  
  
- Following these step, I was able to create 3 fairly powerful servers, each with 64 cores, 256GB memory and 50GB SSD. Using the foreach and doSNOW  R packages, we can use all the cores in parallel at 100%.  I shut them down when all finished in a few days. It costed less than $200. Yes, the flexibility and affordability of computing are here. It is less complicated to use than you think. 
+ Following these step, I was able to create 3 fairly powerful servers, each with 64 cores, 256GB memory and 50GB SSD. Using the foreach and doSNOW  R packages, we can use all the cores in parallel at 100%.  I shut them down when all finished in a few days. It costed less than $200. Yes, the flexibility and affordability of computing are here. It is less complicated than you think. 
  
-Note: This was intially a note for myself taken using OneNote. Translating to Markdown is such a painful process. It remains me of the early days programming with Fortran. Counting spaces... Someone simplify it! I need to figure out a way to insert a html file directly into Blogdown as a post. 
+Please let me know if you have any comments or suggestions. 
+ 
+Note: This was intially a note for myself taken using OneNote. Translating to Markdown is such a painful process. It remained me of the early days Fortran programming. Counting spaces... Someone simplify it! I need to figure out a way to insert a html file directly into Blogdown as a post. 
  
 
 
