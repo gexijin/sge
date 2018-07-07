@@ -31,7 +31,7 @@ Follow these detailed instructions:
 ![EC2](/img/postEC2/image001.png)
 2. Create a key pair using the menu on the left in the NETWORK & SECURITY. A file named XXX.pem will be downloaded automatically. I called it key1.pem. This file will be needed to establish SHH connection later.
 ![Keypair](/img/postEC2/image003.png)
-3. Create a Security Group.  Under the NETWORK& SECURITY, click on Security Groups and then choose Create Security Group.  Select SSH from the "Type" column.  The default outbound rule seems to work. We will use this Security Group when we initial our instances.
+3. Create a Security Group.  Under the NETWORK& SECURITY, click on Security Groups and then choose Create Security Group.  Select SSH from the "Type" column.  The default outbound rule seems to work. We will use this Security Group when we specify our instances.
 ![rert](/img/postEC2/image005.png)
 4. Start requesting an instance (virtual machine) by clicking on the Spot Requests on the left. Instances initiated with Spot Requests are much cheaper than regular instances. They are computers at idle. They can be terminated abruptly though.
 ![rert](/img/postEC2/image007.png)
@@ -47,70 +47,77 @@ Follow these detailed instructions:
  ![rert](/img/postEC2/image013.png)
 8. Once fulfilled, the instance is listed under Instances. 
  ![image](/img/postEC2/image015.png)
-9. To connect the instance, click on the Connect button (above), information like this will be shown.
+9. To connect to the instance, click on the Connect button (above), information like this will be shown.
  ![image](/img/postEC2/image017.png)
-10.	Download Puttygen.exe to convert the key1.pem we got from Amazon to a private key file. 
- ![image](/img/postEC2/image019.png)
+10.	Download Puttygen.exe to convert the key1.pem we got from Amazon to a private key file, "key1-Ec2.ppk".  ![image](/img/postEC2/image019.png)
 11.	Download and start Putty.exe
  - Copy and paste the public DNS, such as ec2-52-14-231-133.us-east-2.compute.amazonaws.com
  - Under Connection and Data, enter the user name: ubuntu or ec2-user
- - Under Connection -> SSH  -> Auth, upload the converted private key file. 
+ - Under Connection -> SSH  -> Auth, upload the converted private key file "key1-Ec2.ppk". 
  - Save this session info as EC2-spot3, so that next time we can easily connect to this instances without going through a-c. 
  ![image](/img/postEC2/image021.png)
 12.	We are connected to the instance!!!  
  ![image](/img/postEC2/image023.png)
-13.	To copy files to this instance, use FileZilla and follow directions here: http://angus.readthedocs.io/en/2014/amazon/transfer-files-between-instance.html
+13.	To copy files to this instance, use FileZilla and follow directions [here](http://angus.readthedocs.io/en/2014/amazon/transfer-files-between-instance.html)
  - Go to Edit -> Settings to add the key1.pem file as a security key
-- File -> Site Manager -> New Site: 
+ - File -> Site Manager -> New Site: 
  - Change Protocol to SFTP;  paste host name, Change Logon Type to Normal;  and enter the username "ubuntu". 
  - Alternatively, we can use scp: 
-  ```
- scp -i ../key1.pem  animals.tar.gz ubuntu@ec2-52-14-179-157.us-east-2.compute.amazonaws.com:/mnt/data/
- ```
+
+    ```
+    scp -i ../key1.pem  animals.tar.gz     ubuntu@ec2-52-14-179-157.us-east-2.compute.amazonaws.com:/mnt/data/
+     ```
 14.	Install Docker software follow this [instruction](https://docs.docker.com/install/linux/docker-ce/ubuntu/#install-using-the-repository), summerized below:
-```
-sudo apt-get update
-sudo apt-get install \
-    apt-transport-https \
-    ca-certificates \
-    curl \
-    software-properties-common
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-sudo add-apt-repository \
-   "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
-   $(lsb_release -cs) \
-   stable"
-sudo apt-get update
-sudo apt-get install docker-ce
-```
+
+    ```
+    sudo apt-get update
+    sudo apt-get install \
+        apt-transport-https \
+        ca-certificates \
+        curl \
+        software-properties-common
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+    sudo add-apt-repository \
+       "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+       $(lsb_release -cs) \
+       stable"
+    sudo apt-get update
+    sudo apt-get install docker-ce
+    ```
 15. Define your docker image. Save this  as a file called: Dockerfile in a folder such as /home/ubuntu/dockers/. See [here for the Bioconductor docker](https://www.bioconductor.org/help/docker/)
-```
-FROM bioconductor/release_core2
-RUN R -e 'source("https://bioconductor.org/biocLite.R");
-biocLite(c("GO.db", "GOstats"), suppressUpdates = T)'
-```
+
+    ```
+    FROM bioconductor/release_core2
+    RUN R -e 'source("https://bioconductor.org/biocLite.R");
+    biocLite(c("GO.db", "GOstats"), suppressUpdates = T)'
+    ```
 16.	Create an image called mybioconductor. Navigate to the folder that contains the file named Dockerfile, and then 
-```
- sudo docker build -t mybioconductor  .
-```
+
+    ```
+    sudo docker build -t mybioconductor  .
+    ```
 17. Create a data folder
-```
-mkdir ~/data
-```
+
+    ```
+    mkdir ~/data
+    ```
 18.Start Bioconductor Docker container instance called bio1. The /home/ubuntu/data folder visible in the docker container as /data
-```
-sudo docker run -v /home/ubuntu/data:/data --name bio1 -t mybioconductor 
-```
+
+    ```
+    sudo docker run -v /home/ubuntu/data:/data --name bio1 -t         mybioconductor 
+    ```
 19. Within the container, you now have the most recent R and Bioconductor. Note that you are logged in as root in the container with IDs like 9c4b9c5d1492.
  ![image](/img/postEC2/image025.png)
 20. To run large R jobs in the background use nohup
-```
-nohup R CMD BATCH myScript.R > nohup.out & 
-```
+
+    ```
+    nohup R CMD BATCH myScript.R > nohup.out & 
+    ```
 21. It is safe to exit the container. To go back to the container:
-```
-sudo exec -it bio2 /bin/bash 
-```
+
+    ```
+    sudo exec -it bio2 /bin/bash 
+    ```
 
 The following steps are optional. 
 
@@ -118,26 +125,26 @@ The following steps are optional.
 Create volume in the exactly the same region such as us-east-2b. These storages will persist even if the instance is terminated.
 2. Attach the volume to the instance.  Select the volume and attach to the desired instance
 3. Mount the created volume to a folder /mnt. Note that the volume needs to be mounted again after reboot. [See here](https://n2ws.com/blog/how-to-guides/connect-aws-ebs-volume-another-instance)
-```
-cd /
-sudo mkdir mnt  # create a folder
-sudo chmod -R a+rwX /mnt
-lsblk    # check the list of devices 
-sudo mkfs.ext4 /dev/xvdf      # create a file system
-sudo mount /dev/xvdf  /mnt 
-```
+
+    ```
+    cd /
+    sudo mkdir mnt  # create a folder
+    sudo chmod -R a+rwX /mnt
+    lsblk    # check the list of devices 
+    sudo mkfs.ext4 /dev/xvdf      # create a file system
+    sudo mount /dev/xvdf  /mnt 
+    ```
 4. Snapshots can be created from the running instances. This snapshot can be copied across regions (Ohio to Central). We can also create a volume based on the snapshot and access the data. To mount volumes created from snapshots. Note that file system already exists on the volumes created from snapshots. We should be mounting the xvdf1, not xvdf. [Details](https://serverfault.com/questions/632905/cannot-mount-an-existing-ebs-on-aws)
 
-```
-cd /
-sudo mkdir mnt  # create folder
-lsblk    # check the list of devices 
-sudo mount /dev/xvdf1  /mnt      
-sudo chmod -R a+rwX /mnt    # make folder writable to all
+    ```
+    cd /
+    sudo mkdir mnt  # create folder
+    lsblk    # check the list of devices 
+    sudo mount /dev/xvdf1  /mnt      
+    sudo chmod -R a+rwX /mnt    # make folder writable to all
+    ```
 
-```
-
-Google Compute Engine can be set up following a similar fashion following [instructions](https://www.onepagezen.com/google-cloud-ftp-filezilla-quick-start/)
+  Google Compute Engine can be set up following a similar fashion following [instructions](https://www.onepagezen.com/google-cloud-ftp-filezilla-quick-start/)
  - Login and create instance at Google  Compute Engine 
  - Download PuttyGen
  - click Generate to create key pairs
@@ -148,6 +155,8 @@ Google Compute Engine can be set up following a similar fashion following [instr
  
  
  Following these step, I was able to create 3 fairly powerful servers, each with 64 cores, 256GB memory and 50GB SSD. Using the foreach and doSNOW  R packages, we can use all the cores in parallel at 100%.  I shut them down when all finished in a few days. It costed less than $200. Yes, the flexibility and affordability of computing are here. It is less complicated to use than you think. 
+ 
+Note: This was intially a note for myself taken using OneNote. Translating to Markdown is such a painful process. It remains me of the early days programming with Fortran. Counting spaces... Someone simplify it! I need to figure out a way to insert a html file directly into Blogdown as a post. 
  
 
 
