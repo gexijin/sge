@@ -16,7 +16,8 @@ This website is created using RStudio following this [tutorial](https://alison.r
 To start a new post, choose "New post" from Addins.
 Use Markdown for texts.  Use RMarkdown if it contains R markdown to render plots, etc. 
 
-Choose which files you want to work on from the right bottom window. Save the files changed and the webpage is rendered automatically in the Viewer window. 
+Choose which files you want to work on from the right bottom window. Save the files changed and the webpage is rendered automatically in the Viewer window.
+
 
 To disable a widget, change the header from active=true to active=false
 
@@ -28,4 +29,4 @@ To add a lot of figures to a [post](https://gex.netlify.com/post/using-amazon-ec
 ```
  ![image](/img/postEC2/image025.png)
 ```
-For R markdown files, the current folder has to be blog/content/post. 
+For R markdown files, the current folder has to be blog/content/post.  For complex calculations, such as the iDEP R Markdown, try the markdown separately, then import to Blogdown.

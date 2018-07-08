@@ -47,4 +47,4 @@ Next year’s camp will be announced at a [Facebook page:](https://www.facebook.
 
 The camp is supported by [BioSNTR](http://biosntr.org/), an [NSF](https://www.nsf.gov/)-funded virtual research center part of [SD EPSCoR](http://sdepscor.org/), with help from the [Department Mathematics and Statistics](https://www.sdstate.edu/mathematics-statistics).
 
-![](/img/image006.png)
+![er](/img/camp/image006.png)

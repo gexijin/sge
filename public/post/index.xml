@@ -57,7 +57,7 @@ Thirteen high school students from across the state participated in this year’
       <pubDate>Thu, 05 Jul 2018 00:00:00 +0000</pubDate>
       
       <guid>/post/using-amazon-ec2-to-run-large-data-analysis-cheaply/</guid>
-      <description>Spot instances on Amazon Elastic Compute Cloud (EC2) allows researchers to do high performance computing at very low cost. These are spare computing capacities that could be abruptly terminated. But such interruptions are rare, and can be tolerated in scientific research. For example, a 64-core workstation with 256 GB of memory can be rented at about $0.7 per hour, which is ~80% off regular on-demand prices. You can request 10 of such servers and use them for 5 days and 2 hours and it only cost you a few hundred dollars.</description>
+      <description>Spot instances on Amazon Elastic Compute Cloud (EC2) allows researchers to do high performance computing at very low cost. These are spare computing capacities that could be abruptly terminated. But such interruptions are rare, and can be tolerated by some jobs. For example, a 64-core workstation with 256 GB of memory can be rented at about $0.7 per hour, which is ~80% off regular on-demand prices. You can request 10 of such servers and use them for 5 days and 2 hours and it only cost you a few hundred dollars.</description>
     </item>
     
     <item>
@@ -101,15 +101,6 @@ sudo docker run --name=my-r-base --rm -ti -v /home/gex/Rdocker:/myData bioconduc
       <guid>/post/predict-mass-shootings/</guid>
       <description>Using the mass shooting data from Mother Jones website, I tried to forecast the number of mass shoottings and total fatalities in the rest of 2018. Some of the R scripts are from this website. Please let me know if I there is any error. I am not an expert on time series analysis. Twitter @StevenXGe
 In recent years, mass shootings are becomming more frequent and more deadly. The models suggest for the rest of 2018, there probably be about 6 more shootings, killing about 59 people in the U.</description>
-    </item>
-    
-    <item>
-      <title></title>
-      <link>/post/ppi_results/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/post/ppi_results/</guid>
-      <description> PPI enrichment P values: Up-regulated: 5.03e-05 &amp;nbsp Down-regulated: 0.00e+00. Small P values indicate more PPIs among DEGs than background.   Interactive and annotated PPI networks among DEGs:  Up-regulated;  &amp;nbsp Down-regulated;  &amp;nbsp Both with fold-changes color coded.</description>
     </item>
     
   </channel>

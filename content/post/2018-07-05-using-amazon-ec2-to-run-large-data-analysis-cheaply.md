@@ -11,7 +11,7 @@ header:
   caption: ''
   image: ''
 ---
-Spot instances on Amazon Elastic Compute Cloud (EC2) allows researchers to do high performance computing at very low cost. These are spare computing capacities that could be abruptly terminated. But such interruptions are rare, and can be tolerated in scientific research.  For example, a 64-core workstation with 256 GB of memory can be rented at about $0.7 per hour, which is ~80% off regular on-demand prices. You can request 10 of such servers and use them for 5 days and 2 hours and it only cost you a few hundred dollars. 
+Spot instances on Amazon Elastic Compute Cloud (EC2) allows researchers to do high performance computing at very low cost. These are spare computing capacities that could be abruptly terminated. But such interruptions are rare, and can be tolerated by some jobs. For example, a 64-core workstation with 256 GB of memory can be rented at about $0.7 per hour, which is ~80% off regular on-demand prices. You can request 10 of such servers and use them for 5 days and 2 hours and it only cost you a few hundred dollars. 
 
 Here I document how I requested an instance (virtual machine) on Amazon EC2, established a connection via SSH, and configured the Linux machine to run R using Docker containers (also new to me). I know little about Linux and networking. If I can make it work, so can you. The instructions below may not be the best way to do things, as I do not understand a lot of the technical details. 
 

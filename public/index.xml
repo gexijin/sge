@@ -1892,7 +1892,7 @@ Generating interactive PPI&lt;/p&gt;
 
 &lt;p&gt;The camp is supported by &lt;a href=&#34;http://biosntr.org/&#34; target=&#34;_blank&#34;&gt;BioSNTR&lt;/a&gt;, an &lt;a href=&#34;https://www.nsf.gov/&#34; target=&#34;_blank&#34;&gt;NSF&lt;/a&gt;-funded virtual research center part of &lt;a href=&#34;http://sdepscor.org/&#34; target=&#34;_blank&#34;&gt;SD EPSCoR&lt;/a&gt;, with help from the &lt;a href=&#34;https://www.sdstate.edu/mathematics-statistics&#34; target=&#34;_blank&#34;&gt;Department Mathematics and Statistics&lt;/a&gt;.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&#34;/img/image006.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/img/camp/image006.png&#34; alt=&#34;er&#34; /&gt;&lt;/p&gt;
 </description>
     </item>
     
@@ -1954,7 +1954,7 @@ These therapies can be classified into the following categories:&lt;/p&gt;
       <guid>/post/using-amazon-ec2-to-run-large-data-analysis-cheaply/</guid>
       <description>
 
-&lt;p&gt;Spot instances on Amazon Elastic Compute Cloud (EC2) allows researchers to do high performance computing at very low cost. These are spare computing capacities that could be abruptly terminated. But such interruptions are rare, and can be tolerated in scientific research.  For example, a 64-core workstation with 256 GB of memory can be rented at about $0.7 per hour, which is ~80% off regular on-demand prices. You can request 10 of such servers and use them for 5 days and 2 hours and it only cost you a few hundred dollars.&lt;/p&gt;
+&lt;p&gt;Spot instances on Amazon Elastic Compute Cloud (EC2) allows researchers to do high performance computing at very low cost. These are spare computing capacities that could be abruptly terminated. But such interruptions are rare, and can be tolerated by some jobs. For example, a 64-core workstation with 256 GB of memory can be rented at about $0.7 per hour, which is ~80% off regular on-demand prices. You can request 10 of such servers and use them for 5 days and 2 hours and it only cost you a few hundred dollars.&lt;/p&gt;
 
 &lt;p&gt;Here I document how I requested an instance (virtual machine) on Amazon EC2, established a connection via SSH, and configured the Linux machine to run R using Docker containers (also new to me). I know little about Linux and networking. If I can make it work, so can you. The instructions below may not be the best way to do things, as I do not understand a lot of the technical details.&lt;/p&gt;
 
@@ -2149,7 +2149,7 @@ Use Markdown for texts.  Use RMarkdown if it contains R markdown to render plots
 &lt;pre&gt;&lt;code&gt; ![image](/img/postEC2/image025.png)
 &lt;/code&gt;&lt;/pre&gt;
 
-&lt;p&gt;For R markdown files, the current folder has to be blog/content/post.&lt;/p&gt;
+&lt;p&gt;For R markdown files, the current folder has to be blog/content/post.  For complex calculations, such as the iDEP R Markdown, try the markdown separately, then import to Blogdown.&lt;/p&gt;
 </description>
     </item>
     
