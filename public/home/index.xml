@@ -97,12 +97,12 @@ I am a teaching instructor for the following courses at University X:
     </item>
     
     <item>
-      <title>Contact</title>
+      <title>About</title>
       <link>/home/contact/</link>
       <pubDate>Wed, 20 Apr 2016 00:00:00 -0500</pubDate>
       
       <guid>/home/contact/</guid>
-      <description>This personal website is created with HUGO and Blogdown. Source code on GitHub.
+      <description>This personal website of Dr. Steven Xijin Ge. Created with HUGO and Blogdown. Source code on GitHub.
 Homepage
 Publications</description>
     </item>
