@@ -30,3 +30,5 @@ To add a lot of figures to a [post](https://gex.netlify.com/post/using-amazon-ec
  ![image](/img/postEC2/image025.png)
 ```
 For R markdown files, the current folder has to be blog/content/post.  For complex calculations, such as the iDEP R Markdown, try the markdown separately, then import to Blogdown.
+
+Microsoft Word documents can be saved as html, which can then be converted to Markdown format. 

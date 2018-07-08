@@ -2150,6 +2150,8 @@ Use Markdown for texts.  Use RMarkdown if it contains R markdown to render plots
 &lt;/code&gt;&lt;/pre&gt;
 
 &lt;p&gt;For R markdown files, the current folder has to be blog/content/post.  For complex calculations, such as the iDEP R Markdown, try the markdown separately, then import to Blogdown.&lt;/p&gt;
+
+&lt;p&gt;Microsoft Word documents can be saved as html, which can then be converted to Markdown format.&lt;/p&gt;
 </description>
     </item>
     
