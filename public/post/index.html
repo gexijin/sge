@@ -443,6 +443,69 @@ To allow complex study designs in iDEP(http://ge-lab.org/idep/), I tried to unde
   
   <span class="middot-divider"></span>
   <span class="article-reading-time">
+    2 min read
+  </span>
+  
+
+  
+  
+
+  
+  
+  
+  
+
+  
+
+</div>
+
+
+  
+  
+  <h3 class="article-title" itemprop="headline">
+    <a href="/post/i-tried-docker/" itemprop="url">First experience with Docker</a>
+  </h3>
+  <div class="article-style" itemprop="articleBody">
+    
+    With the help of my students, I finally figured out how to use Docker to define an isolated environment. I wanted to run the most recent version of R and Bioconductor in a Linux machine without bothering IT support people.
+Turns out it is a one-liner, if you have the docker software installed:
+sudo docker run --name=my-r-base --rm -ti -v /home/gex/Rdocker:/myData bioconductor/release_core2 /bin/bash  It downloads the most recent Bioconductor image from Docker hub, and runs it.
+    
+  </div>
+  <p class="read-more" itemprop="mainEntityOfPage">
+    <a href="/post/i-tried-docker/" class="btn btn-primary btn-outline">
+      CONTINUE READING
+    </a>
+  </p>
+</div>
+
+    
+  
+    
+    
+      
+
+<div class="card-simple" itemscope itemprop="blogPost" itemtype="http://schema.org/BlogPosting">
+  
+
+<div class="article-metadata">
+
+  
+
+  <span class="article-date">
+    
+    <meta content="2018-07-02 00:00:00 &#43;0000 UTC" itemprop="datePublished">
+    <time datetime="2018-07-02 00:00:00 &#43;0000 UTC" itemprop="dateModified">
+      Jul 2, 2018
+    </time>
+  </span>
+  <span itemscope itemprop="author publisher" itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="Steven Xijin Ge">
+  </span>
+
+  
+  <span class="middot-divider"></span>
+  <span class="article-reading-time">
     4 min read
   </span>
   
@@ -485,69 +548,6 @@ In recent years, mass shootings are becomming more frequent and more deadly. The
   </div>
   <p class="read-more" itemprop="mainEntityOfPage">
     <a href="/post/forecasting-mass-shootings/" class="btn btn-primary btn-outline">
-      CONTINUE READING
-    </a>
-  </p>
-</div>
-
-    
-  
-    
-    
-      
-
-<div class="card-simple" itemscope itemprop="blogPost" itemtype="http://schema.org/BlogPosting">
-  
-
-<div class="article-metadata">
-
-  
-
-  <span class="article-date">
-    
-    <meta content="2018-07-02 00:00:00 &#43;0000 UTC" itemprop="datePublished">
-    <time datetime="2018-07-02 00:00:00 &#43;0000 UTC" itemprop="dateModified">
-      Jul 2, 2018
-    </time>
-  </span>
-  <span itemscope itemprop="author publisher" itemtype="http://schema.org/Person">
-    <meta itemprop="name" content="Steven Xijin Ge">
-  </span>
-
-  
-  <span class="middot-divider"></span>
-  <span class="article-reading-time">
-    2 min read
-  </span>
-  
-
-  
-  
-
-  
-  
-  
-  
-
-  
-
-</div>
-
-
-  
-  
-  <h3 class="article-title" itemprop="headline">
-    <a href="/post/i-tried-docker/" itemprop="url">I tried Docker</a>
-  </h3>
-  <div class="article-style" itemprop="articleBody">
-    
-    After being shown by my students many times, I finally figured out how to use Docker to define an isolated environment. My problem is that I wanted to run the most recent version of R and Bioconductor without bothering you guys.
-Turns out it is a two-liner:
-sudo docker login -u gexijin sudo docker run --name=my-r-base --rm -ti -v /home/gex/Rdocker:/myData bioconductor/release_core2 /bin/bash  The first line we need to log-in using username and password from Docker hub: https://hub.
-    
-  </div>
-  <p class="read-more" itemprop="mainEntityOfPage">
-    <a href="/post/i-tried-docker/" class="btn btn-primary btn-outline">
       CONTINUE READING
     </a>
   </p>

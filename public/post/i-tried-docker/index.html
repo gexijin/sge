@@ -17,9 +17,9 @@
       
     
   
-  <meta name="description" content="After being shown by my students many times, I finally figured out how to use Docker to define an isolated environment. My problem is that I wanted to run the most recent version of R and Bioconductor without bothering you guys.
-Turns out it is a two-liner:
-sudo docker login -u gexijin sudo docker run --name=my-r-base --rm -ti -v /home/gex/Rdocker:/myData bioconductor/release_core2 /bin/bash  The first line we need to log-in using username and password from Docker hub: https://hub.">
+  <meta name="description" content="With the help of my students, I finally figured out how to use Docker to define an isolated environment. I wanted to run the most recent version of R and Bioconductor in a Linux machine without bothering IT support people.
+Turns out it is a one-liner, if you have the docker software installed:
+sudo docker run --name=my-r-base --rm -ti -v /home/gex/Rdocker:/myData bioconductor/release_core2 /bin/bash  It downloads the most recent Bioconductor image from Docker hub, and runs it.">
 
   
   <link rel="alternate" hreflang="en-us" href="/post/i-tried-docker/">
@@ -96,10 +96,10 @@ sudo docker login -u gexijin sudo docker run --name=my-r-base --rm -ti -v /home/
   
   <meta property="og:site_name" content="Data Talks">
   <meta property="og:url" content="/post/i-tried-docker/">
-  <meta property="og:title" content="I tried Docker | Data Talks">
-  <meta property="og:description" content="After being shown by my students many times, I finally figured out how to use Docker to define an isolated environment. My problem is that I wanted to run the most recent version of R and Bioconductor without bothering you guys.
-Turns out it is a two-liner:
-sudo docker login -u gexijin sudo docker run --name=my-r-base --rm -ti -v /home/gex/Rdocker:/myData bioconductor/release_core2 /bin/bash  The first line we need to log-in using username and password from Docker hub: https://hub.">
+  <meta property="og:title" content="First experience with Docker | Data Talks">
+  <meta property="og:description" content="With the help of my students, I finally figured out how to use Docker to define an isolated environment. I wanted to run the most recent version of R and Bioconductor in a Linux machine without bothering IT support people.
+Turns out it is a one-liner, if you have the docker software installed:
+sudo docker run --name=my-r-base --rm -ti -v /home/gex/Rdocker:/myData bioconductor/release_core2 /bin/bash  It downloads the most recent Bioconductor image from Docker hub, and runs it.">
   <meta property="og:locale" content="en-us">
   
   <meta property="article:published_time" content="2018-07-02T00:00:00&#43;00:00">
@@ -111,7 +111,7 @@ sudo docker login -u gexijin sudo docker run --name=my-r-base --rm -ti -v /home/
 
   
 
-  <title>I tried Docker | Data Talks</title>
+  <title>First experience with Docker | Data Talks</title>
 
 </head>
 <body id="top" data-spy="scroll" data-target="#toc" data-offset="71" >
@@ -213,7 +213,7 @@ sudo docker login -u gexijin sudo docker run --name=my-r-base --rm -ti -v /home/
 
 
   <div class="article-container">
-    <h1 itemprop="name">I tried Docker</h1>
+    <h1 itemprop="name">First experience with Docker</h1>
 
     
 
@@ -253,7 +253,7 @@ sudo docker login -u gexijin sudo docker run --name=my-r-base --rm -ti -v /home/
   <ul class="share">
     <li>
       <a class="twitter"
-         href="https://twitter.com/intent/tweet?text=I%20tried%20Docker&amp;url=%2fpost%2fi-tried-docker%2f"
+         href="https://twitter.com/intent/tweet?text=First%20experience%20with%20Docker&amp;url=%2fpost%2fi-tried-docker%2f"
          target="_blank" rel="noopener">
         <i class="fa fa-twitter"></i>
       </a>
@@ -267,21 +267,21 @@ sudo docker login -u gexijin sudo docker run --name=my-r-base --rm -ti -v /home/
     </li>
     <li>
       <a class="linkedin"
-         href="https://www.linkedin.com/shareArticle?mini=true&amp;url=%2fpost%2fi-tried-docker%2f&amp;title=I%20tried%20Docker"
+         href="https://www.linkedin.com/shareArticle?mini=true&amp;url=%2fpost%2fi-tried-docker%2f&amp;title=First%20experience%20with%20Docker"
          target="_blank" rel="noopener">
         <i class="fa fa-linkedin"></i>
       </a>
     </li>
     <li>
       <a class="weibo"
-         href="http://service.weibo.com/share/share.php?url=%2fpost%2fi-tried-docker%2f&amp;title=I%20tried%20Docker"
+         href="http://service.weibo.com/share/share.php?url=%2fpost%2fi-tried-docker%2f&amp;title=First%20experience%20with%20Docker"
          target="_blank" rel="noopener">
         <i class="fa fa-weibo"></i>
       </a>
     </li>
     <li>
       <a class="email"
-         href="mailto:?subject=I%20tried%20Docker&amp;body=%2fpost%2fi-tried-docker%2f">
+         href="mailto:?subject=First%20experience%20with%20Docker&amp;body=%2fpost%2fi-tried-docker%2f">
         <i class="fa fa-envelope"></i>
       </a>
     </li>
@@ -297,60 +297,91 @@ sudo docker login -u gexijin sudo docker run --name=my-r-base --rm -ti -v /home/
     <div class="article-style" itemprop="articleBody">
       
 
-<p>After being shown by my students many times, I finally figured out how to use Docker to define an isolated environment. My problem is that I wanted to run the most recent version of R and Bioconductor without bothering you guys.</p>
+<p>With the help of my students, I finally figured out how to use Docker to define an isolated environment.  I wanted to run the most recent version of R and Bioconductor in a Linux machine without bothering IT support people.</p>
 
-<p>Turns out it is a two-liner:</p>
+<p>Turns out it is a one-liner, if you have the docker software installed:</p>
 
-<pre><code>sudo docker login -u gexijin
-sudo docker run --name=my-r-base --rm -ti -v /home/gex/Rdocker:/myData bioconductor/release_core2  /bin/bash
+<pre><code class="language-bash">sudo docker run --name=my-r-base --rm -ti -v /home/gex/Rdocker:/myData bioconductor/release_core2  /bin/bash
 </code></pre>
 
-<p>The first line we need to log-in using username and password from Docker hub: <a href="https://hub.docker.com/" target="_blank">https://hub.docker.com/</a>
-The 2nd line, downloads the most recent Bioconductor image from Docker hub, and runs it. A local folder is mapped to the container.</p>
+<p>It downloads the most recent <a href="https://www.bioconductor.org/help/docker/" target="_blank">Bioconductor image</a> from Docker hub, and runs it. A local folder /home/gex/Rdocker is mapped to /myData in the container.</p>
 
 <p>It’s quite useful to have an environment that you can mess with.</p>
 
 <p>If you want to customize the docker image with additional R packages and use it more than once. Here is the complete steps:</p>
 
-<h2 id="1-docker-login">1.   Docker login</h2>
+<h2 id="1-install-docker-community-edition-ce-software-follow-this-instruction-https-docs-docker-com-install-linux-docker-ce-ubuntu-install-using-the-repository-summerized-below">1. Install Docker community edition (ce) software follow this <a href="https://docs.docker.com/install/linux/docker-ce/ubuntu/#install-using-the-repository" target="_blank">instruction</a>, summerized below:</h2>
 
-<pre><code>sudo docker login - u gexijin
+<pre><code>```
+sudo apt-get update
+sudo apt-get install \
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    software-properties-common
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+sudo add-apt-repository \
+   &quot;deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+   $(lsb_release -cs) \
+   stable&quot;
+sudo apt-get update
+sudo apt-get install docker-ce
+```
 </code></pre>
 
 <h2 id="2-save-this-as-a-file-called-dockerfile">2.   Save this  as a file called: Dockerfile</h2>
 
-<pre><code>FROM bioconductor/release_core2
+<pre><code># Use biocondocuter image from Docker hub
 # https://www.bioconductor.org/help/docker/
- 
+FROM bioconductor/release_core2
+
+# Install R packages
+RUN R -e 'install.packages(c(&quot;foreach&quot;,&quot;doSNOW&quot;))'
+
 # install Bioconductor packages
-RUN R -e 'source(&quot;https://bioconductor.org/biocLite.R&quot;); biocLite(c(&quot;GO.db&quot;, &quot;GOstats&quot;), suppressUpdates = T)'
+RUN R -e 'source(&quot;https://bioconductor.org/biocLite.R&quot;);
+          biocLite(c(&quot;GO.db&quot;, &quot;GOstats&quot;), suppressUpdates = T)'
 </code></pre>
 
-<h2 id="3-create-image-called-bioconductor">3.   Create image called bioconductor</h2>
+<p>You can find docker images for many typical use at ]Docker hub.](<a href="https://hub.docker.com/" target="_blank">https://hub.docker.com/</a>)</p>
+
+<h2 id="3-navigate-to-the-folder-that-contains-the-dockerfile-create-image-called-bioconductor">3.   Navigate to the folder that contains the Dockerfile. Create image called bioconductor.</h2>
 
 <pre><code>sudo docker build -t bioconductor .
 </code></pre>
 
 <h2 id="4-run-an-instance-mapping-rdocker-folder-in-the-host-to-mydata-in-the-container">4.   Run an instance (mapping Rdocker folder in the host to /myData in the container)</h2>
 
-<pre><code>docker run -v /home/gex/Rdocker:/myData --name bioconductor1 -t bioconductor
+<pre><code>docker run -v /home/gex/Rdocker:/myData --name bio1 -t bioconductor
 </code></pre>
 
-<p>From <a href="https://deis.com/blog/2015/creating-sharing-first-docker-image/" target="_blank">https://deis.com/blog/2015/creating-sharing-first-docker-image/</a></p>
+<p><a href="https://deis.com/blog/2015/creating-sharing-first-docker-image/" target="_blank">More info</a></p>
 
 <h2 id="5-access-docker-instance">5.   Access docker instance</h2>
 
-<pre><code>sudo docker exec -it bioconductor1 /bin/bash
+<pre><code>sudo docker exec -it bio1 /bin/bash
 </code></pre>
 
-<h2 id="6-run-large-r-script">6.   Run large R script</h2>
+<h2 id="6-run-large-r-script-from-within-the-container">6.   Run large R script from within the container</h2>
 
 <pre><code>nohup R CMD BATCH gene_mapping_all.R &gt; nohup.out &amp;
 </code></pre>
 
-<h2 id="7-stop-a-docker-instance">7.   Stop a docker instance</h2>
+<h2 id="7-exit-the-docker-container">7. Exit the docker container</h2>
 
-<pre><code>sudo docker stop bioconductor1
+<pre><code>exit
+</code></pre>
+
+<h2 id="8-check-docker-container-status">8. Check docker container status</h2>
+
+<pre><code>sudo docker ps
+sudo docker stats
+</code></pre>
+
+<h2 id="9-stop-and-remove-a-docker-instance">9.   Stop and remove a docker instance</h2>
+
+<pre><code>sudo docker stop bio1
+sudo docker rm bio1
 </code></pre>
 
     </div>

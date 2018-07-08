@@ -14,6 +14,9 @@ weight = 70
 autolink = true
 
 +++
+ This personal website is created with [HUGO](https://gohugo.io/) and [Blogdown](https://bookdown.org/yihui/blogdown/). Source code on [GitHub](https://github.com/gexijin/sge).
 
-Xijin.Ge@SDstate.edu
+[Homepage](https://www.sdstate.edu/directory/xijin-ge)
+
+[Publications](https://scholar.google.com/citations?user=DFUSeDUAAAAJ&hl=en)
 

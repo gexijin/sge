@@ -1972,6 +1972,103 @@ kable(res[1:5,-(3:4)])
     </item>
     
     <item>
+      <title>First experience with Docker</title>
+      <link>/post/i-tried-docker/</link>
+      <pubDate>Mon, 02 Jul 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/i-tried-docker/</guid>
+      <description>
+
+&lt;p&gt;With the help of my students, I finally figured out how to use Docker to define an isolated environment.  I wanted to run the most recent version of R and Bioconductor in a Linux machine without bothering IT support people.&lt;/p&gt;
+
+&lt;p&gt;Turns out it is a one-liner, if you have the docker software installed:&lt;/p&gt;
+
+&lt;pre&gt;&lt;code class=&#34;language-bash&#34;&gt;sudo docker run --name=my-r-base --rm -ti -v /home/gex/Rdocker:/myData bioconductor/release_core2  /bin/bash
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;It downloads the most recent &lt;a href=&#34;https://www.bioconductor.org/help/docker/&#34; target=&#34;_blank&#34;&gt;Bioconductor image&lt;/a&gt; from Docker hub, and runs it. A local folder /home/gex/Rdocker is mapped to /myData in the container.&lt;/p&gt;
+
+&lt;p&gt;It’s quite useful to have an environment that you can mess with.&lt;/p&gt;
+
+&lt;p&gt;If you want to customize the docker image with additional R packages and use it more than once. Here is the complete steps:&lt;/p&gt;
+
+&lt;h2 id=&#34;1-install-docker-community-edition-ce-software-follow-this-instruction-https-docs-docker-com-install-linux-docker-ce-ubuntu-install-using-the-repository-summerized-below&#34;&gt;1. Install Docker community edition (ce) software follow this &lt;a href=&#34;https://docs.docker.com/install/linux/docker-ce/ubuntu/#install-using-the-repository&#34; target=&#34;_blank&#34;&gt;instruction&lt;/a&gt;, summerized below:&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code&gt;```
+sudo apt-get update
+sudo apt-get install \
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    software-properties-common
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+sudo add-apt-repository \
+   &amp;quot;deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+   $(lsb_release -cs) \
+   stable&amp;quot;
+sudo apt-get update
+sudo apt-get install docker-ce
+```
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;2-save-this-as-a-file-called-dockerfile&#34;&gt;2.   Save this  as a file called: Dockerfile&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code&gt;# Use biocondocuter image from Docker hub
+# https://www.bioconductor.org/help/docker/
+FROM bioconductor/release_core2
+
+# Install R packages
+RUN R -e &#39;install.packages(c(&amp;quot;foreach&amp;quot;,&amp;quot;doSNOW&amp;quot;))&#39;
+
+# install Bioconductor packages
+RUN R -e &#39;source(&amp;quot;https://bioconductor.org/biocLite.R&amp;quot;);
+          biocLite(c(&amp;quot;GO.db&amp;quot;, &amp;quot;GOstats&amp;quot;), suppressUpdates = T)&#39;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;You can find docker images for many typical use at ]Docker hub.](&lt;a href=&#34;https://hub.docker.com/&#34; target=&#34;_blank&#34;&gt;https://hub.docker.com/&lt;/a&gt;)&lt;/p&gt;
+
+&lt;h2 id=&#34;3-navigate-to-the-folder-that-contains-the-dockerfile-create-image-called-bioconductor&#34;&gt;3.   Navigate to the folder that contains the Dockerfile. Create image called bioconductor.&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code&gt;sudo docker build -t bioconductor .
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;4-run-an-instance-mapping-rdocker-folder-in-the-host-to-mydata-in-the-container&#34;&gt;4.   Run an instance (mapping Rdocker folder in the host to /myData in the container)&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code&gt;docker run -v /home/gex/Rdocker:/myData --name bio1 -t bioconductor
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;&lt;a href=&#34;https://deis.com/blog/2015/creating-sharing-first-docker-image/&#34; target=&#34;_blank&#34;&gt;More info&lt;/a&gt;&lt;/p&gt;
+
+&lt;h2 id=&#34;5-access-docker-instance&#34;&gt;5.   Access docker instance&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code&gt;sudo docker exec -it bio1 /bin/bash
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;6-run-large-r-script-from-within-the-container&#34;&gt;6.   Run large R script from within the container&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code&gt;nohup R CMD BATCH gene_mapping_all.R &amp;gt; nohup.out &amp;amp;
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;7-exit-the-docker-container&#34;&gt;7. Exit the docker container&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code&gt;exit
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;8-check-docker-container-status&#34;&gt;8. Check docker container status&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code&gt;sudo docker ps
+sudo docker stats
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h2 id=&#34;9-stop-and-remove-a-docker-instance&#34;&gt;9.   Stop and remove a docker instance&lt;/h2&gt;
+
+&lt;pre&gt;&lt;code&gt;sudo docker stop bio1
+sudo docker rm bio1
+&lt;/code&gt;&lt;/pre&gt;
+</description>
+    </item>
+    
+    <item>
       <title>Forecasting mass shootings</title>
       <link>/post/forecasting-mass-shootings/</link>
       <pubDate>Mon, 02 Jul 2018 00:00:00 +0000</pubDate>
@@ -2114,72 +2211,6 @@ shottings&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;So this model predicts that about 80 people will be killed in mass shootings in 2018. Since there were 21 in Florida and Pennsylvania already. The rest of 2018 will see about 59 people getting killed. I hope these are not going to happen in schools.&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>I tried Docker</title>
-      <link>/post/i-tried-docker/</link>
-      <pubDate>Mon, 02 Jul 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/post/i-tried-docker/</guid>
-      <description>
-
-&lt;p&gt;After being shown by my students many times, I finally figured out how to use Docker to define an isolated environment. My problem is that I wanted to run the most recent version of R and Bioconductor without bothering you guys.&lt;/p&gt;
-
-&lt;p&gt;Turns out it is a two-liner:&lt;/p&gt;
-
-&lt;pre&gt;&lt;code&gt;sudo docker login -u gexijin
-sudo docker run --name=my-r-base --rm -ti -v /home/gex/Rdocker:/myData bioconductor/release_core2  /bin/bash
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;The first line we need to log-in using username and password from Docker hub: &lt;a href=&#34;https://hub.docker.com/&#34; target=&#34;_blank&#34;&gt;https://hub.docker.com/&lt;/a&gt;
-The 2nd line, downloads the most recent Bioconductor image from Docker hub, and runs it. A local folder is mapped to the container.&lt;/p&gt;
-
-&lt;p&gt;It’s quite useful to have an environment that you can mess with.&lt;/p&gt;
-
-&lt;p&gt;If you want to customize the docker image with additional R packages and use it more than once. Here is the complete steps:&lt;/p&gt;
-
-&lt;h2 id=&#34;1-docker-login&#34;&gt;1.   Docker login&lt;/h2&gt;
-
-&lt;pre&gt;&lt;code&gt;sudo docker login - u gexijin
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&#34;2-save-this-as-a-file-called-dockerfile&#34;&gt;2.   Save this  as a file called: Dockerfile&lt;/h2&gt;
-
-&lt;pre&gt;&lt;code&gt;FROM bioconductor/release_core2
-# https://www.bioconductor.org/help/docker/
- 
-# install Bioconductor packages
-RUN R -e &#39;source(&amp;quot;https://bioconductor.org/biocLite.R&amp;quot;); biocLite(c(&amp;quot;GO.db&amp;quot;, &amp;quot;GOstats&amp;quot;), suppressUpdates = T)&#39;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&#34;3-create-image-called-bioconductor&#34;&gt;3.   Create image called bioconductor&lt;/h2&gt;
-
-&lt;pre&gt;&lt;code&gt;sudo docker build -t bioconductor .
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&#34;4-run-an-instance-mapping-rdocker-folder-in-the-host-to-mydata-in-the-container&#34;&gt;4.   Run an instance (mapping Rdocker folder in the host to /myData in the container)&lt;/h2&gt;
-
-&lt;pre&gt;&lt;code&gt;docker run -v /home/gex/Rdocker:/myData --name bioconductor1 -t bioconductor
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;p&gt;From &lt;a href=&#34;https://deis.com/blog/2015/creating-sharing-first-docker-image/&#34; target=&#34;_blank&#34;&gt;https://deis.com/blog/2015/creating-sharing-first-docker-image/&lt;/a&gt;&lt;/p&gt;
-
-&lt;h2 id=&#34;5-access-docker-instance&#34;&gt;5.   Access docker instance&lt;/h2&gt;
-
-&lt;pre&gt;&lt;code&gt;sudo docker exec -it bioconductor1 /bin/bash
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&#34;6-run-large-r-script&#34;&gt;6.   Run large R script&lt;/h2&gt;
-
-&lt;pre&gt;&lt;code&gt;nohup R CMD BATCH gene_mapping_all.R &amp;gt; nohup.out &amp;amp;
-&lt;/code&gt;&lt;/pre&gt;
-
-&lt;h2 id=&#34;7-stop-a-docker-instance&#34;&gt;7.   Stop a docker instance&lt;/h2&gt;
-
-&lt;pre&gt;&lt;code&gt;sudo docker stop bioconductor1
-&lt;/code&gt;&lt;/pre&gt;
 </description>
     </item>
     

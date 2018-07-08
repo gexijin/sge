@@ -43,6 +43,17 @@ To allow complex study designs in iDEP(http://ge-lab.org/idep/), I tried to unde
     </item>
     
     <item>
+      <title>First experience with Docker</title>
+      <link>/post/i-tried-docker/</link>
+      <pubDate>Mon, 02 Jul 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/i-tried-docker/</guid>
+      <description>With the help of my students, I finally figured out how to use Docker to define an isolated environment. I wanted to run the most recent version of R and Bioconductor in a Linux machine without bothering IT support people.
+Turns out it is a one-liner, if you have the docker software installed:
+sudo docker run --name=my-r-base --rm -ti -v /home/gex/Rdocker:/myData bioconductor/release_core2 /bin/bash  It downloads the most recent Bioconductor image from Docker hub, and runs it.</description>
+    </item>
+    
+    <item>
       <title>Forecasting mass shootings</title>
       <link>/post/forecasting-mass-shootings/</link>
       <pubDate>Mon, 02 Jul 2018 00:00:00 +0000</pubDate>
@@ -50,17 +61,6 @@ To allow complex study designs in iDEP(http://ge-lab.org/idep/), I tried to unde
       <guid>/post/forecasting-mass-shootings/</guid>
       <description>Using the mass shooting data from Mother Jones website, I tried to forecast the number of mass shoottings and total fatalities in the rest of 2018. Some of the R scripts are from this website. Please let me know if I there is any error. I am not an expert on time series analysis. Twitter @StevenXGe
 In recent years, mass shootings are becomming more frequent and more deadly. The models suggest for the rest of 2018, there probably be about 6 more shootings, killing about 59 people in the U.</description>
-    </item>
-    
-    <item>
-      <title>I tried Docker</title>
-      <link>/post/i-tried-docker/</link>
-      <pubDate>Mon, 02 Jul 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/post/i-tried-docker/</guid>
-      <description>After being shown by my students many times, I finally figured out how to use Docker to define an isolated environment. My problem is that I wanted to run the most recent version of R and Bioconductor without bothering you guys.
-Turns out it is a two-liner:
-sudo docker login -u gexijin sudo docker run --name=my-r-base --rm -ti -v /home/gex/Rdocker:/myData bioconductor/release_core2 /bin/bash  The first line we need to log-in using username and password from Docker hub: https://hub.</description>
     </item>
     
     <item>

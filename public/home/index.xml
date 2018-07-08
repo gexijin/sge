@@ -13,7 +13,7 @@
     
     
     <item>
-      <title>Dr G&#39;s Bioinformatics</title>
+      <title>Academic</title>
       <link>/home/hero/</link>
       <pubDate>Sun, 15 Oct 2017 00:00:00 -0500</pubDate>
       
@@ -28,7 +28,7 @@
       <pubDate>Wed, 20 Apr 2016 00:00:00 -0500</pubDate>
       
       <guid>/home/about/</guid>
-      <description>Biography Dr. Steven Xijin Ge is an Associate Professor, focusing on bioinformatics.</description>
+      <description>Biography Dr. Steven Xijin Ge is an Associate Professor, bioinformatics.</description>
     </item>
     
     <item>
@@ -102,7 +102,9 @@ I am a teaching instructor for the following courses at University X:
       <pubDate>Wed, 20 Apr 2016 00:00:00 -0500</pubDate>
       
       <guid>/home/contact/</guid>
-      <description>Xijin.Ge@SDstate.edu</description>
+      <description>This personal website is created with HUGO and Blogdown. Source code on GitHub.
+Homepage
+Publications</description>
     </item>
     
   </channel>

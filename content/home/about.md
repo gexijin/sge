@@ -1,7 +1,7 @@
 +++
 # About/Biography widget.
 widget = "about"
-active = true
+active = false
 date = 2016-04-20T00:00:00
 
 # Order that this section will appear in.
@@ -16,7 +16,7 @@ weight = 5
   ]
 
 # List your qualifications (such as academic degrees).
-[[education.courses]]
+ [[education.courses]]
   course = "PhD in Engineering"
   institution = "The University of Tokyo"
   year = 2000
@@ -35,4 +35,4 @@ weight = 5
 
 # Biography
 
-Dr. Steven Xijin Ge is an Associate Professor, focusing on bioinformatics.
+Dr. Steven Xijin Ge is an Associate Professor, bioinformatics.
