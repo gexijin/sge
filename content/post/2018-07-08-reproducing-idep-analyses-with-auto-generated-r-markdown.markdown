@@ -1,5 +1,5 @@
 ---
-title: Reproducing iDEP analyses with auto-generated R Markdown
+title: Reproduce iDEP analyses with auto-generated R Markdown
 author: Steven Ge
 date: '2018-07-08'
 slug: reproducing-idep-analyses-with-auto-generated-r-markdown

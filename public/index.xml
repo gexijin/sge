@@ -106,7 +106,7 @@
     </item>
     
     <item>
-      <title>Reproducing iDEP analyses with auto-generated R Markdown</title>
+      <title>Reproduce iDEP analyses with auto-generated R Markdown</title>
       <link>/post/reproducing-idep-analyses-with-auto-generated-r-markdown/</link>
       <pubDate>Sun, 08 Jul 2018 00:00:00 +0000</pubDate>
       
@@ -1892,13 +1892,7 @@ Generating interactive PPI&lt;/p&gt;
 
 &lt;p&gt;The camp is supported by &lt;a href=&#34;http://biosntr.org/&#34; target=&#34;_blank&#34;&gt;BioSNTR&lt;/a&gt;, an &lt;a href=&#34;https://www.nsf.gov/&#34; target=&#34;_blank&#34;&gt;NSF&lt;/a&gt;-funded virtual research center part of &lt;a href=&#34;http://sdepscor.org/&#34; target=&#34;_blank&#34;&gt;SD EPSCoR&lt;/a&gt;, with help from the &lt;a href=&#34;https://www.sdstate.edu/mathematics-statistics&#34; target=&#34;_blank&#34;&gt;Department Mathematics and Statistics&lt;/a&gt;.&lt;/p&gt;
 
-&lt;p&gt;Contacts: Dr. Xijin Ge &lt;a href=&#34;mailto:Xijin.Ge@sdstate.edu&#34; target=&#34;_blank&#34;&gt;Xijin.Ge@sdstate.edu&lt;/a&gt; 605-215-9254&lt;/p&gt;
-
-&lt;p&gt;Linda Wendt, &lt;a href=&#34;mailto:Linda.Wendt@sdstate.edu&#34; target=&#34;_blank&#34;&gt;Linda.Wendt@sdstate.edu&lt;/a&gt; 605-688-6196&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;/img/camp/image002.jpg&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&#34;img/camp/image006.jpg&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/img/image006.png&#34; alt=&#34;&#34; /&gt;&lt;/p&gt;
 </description>
     </item>
     
@@ -2154,6 +2148,8 @@ Use Markdown for texts.  Use RMarkdown if it contains R markdown to render plots
 
 &lt;pre&gt;&lt;code&gt; ![image](/img/postEC2/image025.png)
 &lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;For R markdown files, the current folder has to be blog/content/post.&lt;/p&gt;
 </description>
     </item>
     

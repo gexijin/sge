@@ -28,4 +28,4 @@ To add a lot of figures to a [post](https://gex.netlify.com/post/using-amazon-ec
 ```
  ![image](/img/postEC2/image025.png)
 ```
- 
+For R markdown files, the current folder has to be blog/content/post. 

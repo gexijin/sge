@@ -47,11 +47,4 @@ Next year’s camp will be announced at a [Facebook page:](https://www.facebook.
 
 The camp is supported by [BioSNTR](http://biosntr.org/), an [NSF](https://www.nsf.gov/)-funded virtual research center part of [SD EPSCoR](http://sdepscor.org/), with help from the [Department Mathematics and Statistics](https://www.sdstate.edu/mathematics-statistics).
 
-Contacts: Dr. Xijin Ge [Xijin.Ge@sdstate.edu](mailto:Xijin.Ge@sdstate.edu) 605-215-9254
-
-Linda Wendt, [Linda.Wendt@sdstate.edu](mailto:Linda.Wendt@sdstate.edu) 605-688-6196
-
-
-![](/img/camp/image002.jpg)
-
-![](img/camp/image006.jpg)
+![](/img/image006.png)
