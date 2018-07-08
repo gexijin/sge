@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Grant proposal on In Data We Trust</title>
+    <link>/tags/grant-proposal/</link>
+    <description>Recent content in Grant proposal on In Data We Trust</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>&amp;copy; 2018</copyright>
+    <lastBuildDate>Sun, 08 Jul 2018 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/tags/grant-proposal/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Preparing NIH grant proposals</title>
+      <link>/post/preparing-nih-grant-proposals/</link>
+      <pubDate>Sun, 08 Jul 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/preparing-nih-grant-proposals/</guid>
+      <description>During the preparation of my NIH proposal in May 2018, I started a OneNote document to organize the information I gathered. These are my notes and some tips. Hope it can be useful to new investigators. I got lucky with NIH only once, so I am not that &amp;ldquo;seasoned&amp;rdquo;. This is based on my personal opinions, experiences, and lessons.
+1. Suck it up and write it  I use one Microsoft Word document to write all the components: Project Summary, Narrative, Specific Aims, Research Strategy, References, Facilities, Equipment, Personnel justification, Resource Sharing Plan, etc.</description>
+    </item>
+    
+  </channel>
+</rss>

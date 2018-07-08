@@ -40,6 +40,15 @@
     </item>
     
     <item>
+      <title>Data Science</title>
+      <link>/tags/data-science/</link>
+      <pubDate>Sun, 08 Jul 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/data-science/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Deep-learning</title>
       <link>/tags/deep-learning/</link>
       <pubDate>Wed, 27 Apr 2016 00:00:00 -0500</pubDate>
@@ -58,6 +67,24 @@
     </item>
     
     <item>
+      <title>Educational outreach</title>
+      <link>/tags/educational-outreach/</link>
+      <pubDate>Sun, 08 Jul 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/educational-outreach/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Grant proposal</title>
+      <link>/tags/grant-proposal/</link>
+      <pubDate>Sun, 08 Jul 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/grant-proposal/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>Gun violence</title>
       <link>/tags/gun-violence/</link>
       <pubDate>Mon, 02 Jul 2018 00:00:00 +0000</pubDate>
@@ -67,11 +94,38 @@
     </item>
     
     <item>
+      <title>IDEP</title>
+      <link>/tags/idep/</link>
+      <pubDate>Sun, 08 Jul 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/idep/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>RNA-Seq</title>
       <link>/tags/rna-seq/</link>
       <pubDate>Mon, 02 Jul 2018 00:00:00 +0000</pubDate>
       
       <guid>/tags/rna-seq/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Summer camp</title>
+      <link>/tags/summer-camp/</link>
+      <pubDate>Sun, 08 Jul 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/summer-camp/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Vitiligo</title>
+      <link>/tags/vitiligo/</link>
+      <pubDate>Sun, 08 Jul 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/vitiligo/</guid>
       <description></description>
     </item>
     

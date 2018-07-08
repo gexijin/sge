@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Summer camp on In Data We Trust</title>
+    <link>/tags/summer-camp/</link>
+    <description>Recent content in Summer camp on In Data We Trust</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>&amp;copy; 2018</copyright>
+    <lastBuildDate>Sun, 08 Jul 2018 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/tags/summer-camp/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Teaching R to High School Students</title>
+      <link>/post/teaching-r-and-data-science-to-high-school-students/</link>
+      <pubDate>Sun, 08 Jul 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/teaching-r-and-data-science-to-high-school-students/</guid>
+      <description>Press release
+Thirteen high school students from across the state participated in this year’s Data Analytics Camp at South Dakota State University (SDSU) main campus from June 18th to 21st, 2018. There were six girls and seven boys. The students lived in college student’s dorms for four days. Most learning activities were in a computer lab in Solberg Hall. As most college students are away during the summer, the high school students got to use a lot of facilities and services.</description>
+    </item>
+    
+  </channel>
+</rss>

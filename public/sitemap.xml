@@ -5,6 +5,42 @@
     
     <url>
     
+      <loc>/post/preparing-nih-grant-proposals/</loc>
+      <lastmod>2018-07-08T00:00:00+00:00</lastmod>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/post/reproducing-idep-analyses-with-auto-generated-r-markdown/</loc>
+      <lastmod>2018-07-08T00:00:00+00:00</lastmod>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/post/teaching-r-and-data-science-to-high-school-students/</loc>
+      <lastmod>2018-07-08T00:00:00+00:00</lastmod>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/post/vitiligo-treatment-protocols/</loc>
+      <lastmod>2018-07-08T00:00:00+00:00</lastmod>
+    </url>
+    
+  
+    
+    
+    <url>
+    
       <loc>/post/using-amazon-ec2-to-run-large-data-analysis-cheaply/</loc>
       <lastmod>2018-07-05T00:00:00+00:00</lastmod>
     </url>
@@ -41,15 +77,6 @@
     
     <url>
     
-      <loc>/post/forecasting-mass-shootings/</loc>
-      <lastmod>2018-07-02T00:00:00+00:00</lastmod>
-    </url>
-    
-  
-    
-    
-    <url>
-    
       <loc>/post/predict-mass-shootings/</loc>
       <lastmod>2018-07-02T00:00:00+00:00</lastmod>
     </url>
@@ -69,15 +96,6 @@
     <url>
     
       <loc>/post/r-markdown-test2/</loc>
-      <lastmod>2018-07-02T00:00:00+00:00</lastmod>
-    </url>
-    
-  
-    
-    
-    <url>
-    
-      <loc>/post/markdown-3/</loc>
       <lastmod>2018-07-02T00:00:00+00:00</lastmod>
     </url>
     
@@ -158,15 +176,6 @@
     
     <url>
     
-      <loc>/post/getting-started/</loc>
-      <lastmod>2018-01-13T00:00:00-06:00</lastmod>
-    </url>
-    
-  
-    
-    
-    <url>
-    
       <loc>/publication/person-re-identification/</loc>
       <lastmod>2015-09-01T00:00:00-05:00</lastmod>
     </url>
@@ -185,7 +194,7 @@
     
     <url>
     
-      <loc>/post/2018-07-05-using-amazon-ec2-to-run-large-data-analysis-cheaply/</loc>
+      <loc>/post/ppi_results/</loc>
     </url>
     
   
@@ -223,6 +232,16 @@
     
     <url>
     
+      <loc>/categories/bioinformatics/</loc>
+      <lastmod>2018-07-08T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
       <loc>/tags/blogdown/</loc>
       <lastmod>2018-07-02T00:00:00+00:00</lastmod>
       <priority>0</priority>
@@ -234,6 +253,7 @@
     <url>
     
       <loc>/categories/</loc>
+      <lastmod>2018-07-08T00:00:00+00:00</lastmod>
       <priority>0</priority>
     </url>
     
@@ -244,6 +264,16 @@
     
       <loc>/categories/cloud-computing/</loc>
       <lastmod>2018-07-05T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/tags/data-science/</loc>
+      <lastmod>2018-07-08T00:00:00+00:00</lastmod>
       <priority>0</priority>
     </url>
     
@@ -272,8 +302,68 @@
     
     <url>
     
+      <loc>/categories/disease/</loc>
+      <lastmod>2018-07-08T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/categories/education/</loc>
+      <lastmod>2018-07-08T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/tags/educational-outreach/</loc>
+      <lastmod>2018-07-08T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/tags/grant-proposal/</loc>
+      <lastmod>2018-07-08T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/categories/grant-proposal/</loc>
+      <lastmod>2018-07-08T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
       <loc>/tags/gun-violence/</loc>
       <lastmod>2018-07-02T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/tags/idep/</loc>
+      <lastmod>2018-07-08T00:00:00+00:00</lastmod>
       <priority>0</priority>
     </url>
     
@@ -313,7 +403,7 @@
     <url>
     
       <loc>/categories/r/</loc>
-      <lastmod>2018-07-02T00:00:00+00:00</lastmod>
+      <lastmod>2018-07-08T00:00:00+00:00</lastmod>
       <priority>0</priority>
     </url>
     
@@ -332,6 +422,16 @@
     
     <url>
     
+      <loc>/categories/rna-seq/</loc>
+      <lastmod>2018-07-08T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
       <loc>/categories/social-issues/</loc>
       <lastmod>2018-07-02T00:00:00+00:00</lastmod>
       <priority>0</priority>
@@ -342,8 +442,28 @@
     
     <url>
     
+      <loc>/tags/summer-camp/</loc>
+      <lastmod>2018-07-08T00:00:00+00:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
       <loc>/tags/</loc>
       <lastmod>2017-01-01T00:00:00-06:00</lastmod>
+      <priority>0</priority>
+    </url>
+    
+  
+    
+    
+    <url>
+    
+      <loc>/tags/vitiligo/</loc>
+      <lastmod>2018-07-08T00:00:00+00:00</lastmod>
       <priority>0</priority>
     </url>
     

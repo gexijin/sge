@@ -14,7 +14,7 @@ weight = 70
 autolink = true
 
 +++
- This personal website of Dr. Steven Xijin Ge. Created with [HUGO](https://gohugo.io/) and [Blogdown](https://bookdown.org/yihui/blogdown/). Source code on [GitHub](https://github.com/gexijin/sge).
+ This is a personal website of Dr. Steven Xijin Ge. Created with [HUGO](https://gohugo.io/) and [Blogdown](https://bookdown.org/yihui/blogdown/). Source code on [GitHub](https://github.com/gexijin/sge). Recently, I am busy working on tools for analyzing genomic data: [iDEP](http://bioinformatics.sdstate.edu/idep/) and [ShinyGO.](http://bioinformatics.sdstate.edu/go/)
 
 [Homepage](https://www.sdstate.edu/directory/xijin-ge)
 

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Disease on In Data We Trust</title>
+    <link>/categories/disease/</link>
+    <description>Recent content in Disease on In Data We Trust</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <copyright>&amp;copy; 2018</copyright>
+    <lastBuildDate>Sun, 08 Jul 2018 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="/categories/disease/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Vitiligo Treatment Protocols</title>
+      <link>/post/vitiligo-treatment-protocols/</link>
+      <pubDate>Sun, 08 Jul 2018 00:00:00 +0000</pubDate>
+      
+      <guid>/post/vitiligo-treatment-protocols/</guid>
+      <description>As a scientist who also suffers from vitiligo, I spent a day trying to read the current SCIENTIFIC findings published in peer-reviewed scientific journals.
+ Two type of vitiligo: segmental (localized) vs. non-segmental. Most are non-segmental. Some evidence suggests that vitiligo patients are low in antioxidants, vitamin D, zinc, and copper. Vitiligo patients often suffer low glutathione peroxidase (GPx) as suggested by this and other papers. Vitiligo is a loss of pigmentation in the skin.</description>
+    </item>
+    
+  </channel>
+</rss>

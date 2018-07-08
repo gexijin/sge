@@ -13,16 +13,6 @@
     
     
     <item>
-      <title>Forecasting mass shootings</title>
-      <link>/post/forecasting-mass-shootings/</link>
-      <pubDate>Mon, 02 Jul 2018 00:00:00 +0000</pubDate>
-      
-      <guid>/post/forecasting-mass-shootings/</guid>
-      <description>Using the mass shooting data from Mother Jones website, I tried to forecast the number of mass shoottings and total fatalities in the rest of 2018. Some of the R scripts are from this website. Please let me know if I there is any error. I am not an expert on time series analysis. Twitter @StevenXGe
-In recent years, mass shootings are becomming more frequent and more deadly. The models suggest for the rest of 2018, there probably be about 6 more shootings, killing about 59 people in the U.</description>
-    </item>
-    
-    <item>
       <title>Predict mass shootings</title>
       <link>/post/predict-mass-shootings/</link>
       <pubDate>Mon, 02 Jul 2018 00:00:00 +0000</pubDate>
