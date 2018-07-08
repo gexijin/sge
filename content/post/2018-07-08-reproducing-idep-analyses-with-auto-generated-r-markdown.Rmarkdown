@@ -311,4 +311,27 @@ Generating interactive PPI
  write(stringDB_network_link(), 'PPI_results.html') # write results to html file 
  browseURL('PPI_results.html') # open in browser 
 ```
+## 8. Pathway analysis   
+```{r, message=FALSE  } 
+ input_selectContrast1 <- 'I:p53_wt.Treatment_IR'	#select Comparison 
+ #input_selectContrast1 = limma.out$comparisons[3] # manually set
+ input_selectGO <- 'KEGG'	#Gene set category 
+ #input_selectGO='custom' # if custom gmt file
+ input_minSetSize <- 15	#Min size for gene set
+ input_maxSetSize <- 2000	#Max size for gene set 
+ # Read pathway data again 
+ GeneSets.out <-readGeneSets( geneSetFile,
+    convertedData.out, input_selectGO,input_selectOrg,
+    c(input_minSetSize, input_maxSetSize)  ) 
+ input_pathwayPvalCutoff <- 0.2	#FDR cutoff
+ input_nPathwayShow <- 30	#Top pathways to show
+ input_absoluteFold <- FALSE	#Use absolute values of fold-change?
+ input_GenePvalCutoff <- 1	#FDR to remove genes 
 
+ input_pathwayMethod = 1  # 1  GAGE
+ gagePathwayData.out <- gagePathwayData()  # pathway analysis using GAGE  
+   
+ results <- gagePathwayData.out  #Enrichment analysis for k-Means clusters	
+ results$adj.Pval <- format( results$adj.Pval,digits=3 )
+ kable( results, row.names=FALSE) 
+```
