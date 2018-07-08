@@ -7,7 +7,7 @@
 baseurl = "/"
 
 # Title of your site
-title = "Data Talks"
+title = "In Data We Trust"
 
 # Your copyright notice - appears in site footer.
 # To display a copyright symbol, type `&copy;`.
@@ -254,10 +254,10 @@ enableGitInfo = false
   # Align the main menu to the right of the page? (true/false)
   align_right = true
 
-[[menu.main]]
-  name = "Home"
-  url = "#about"
-  weight = 1
+#[[menu.main]]
+#  name = "Home"
+#  url = "#about"
+#  weight = 1
 
 #[[menu.main]]
 #  name = "Publications"
@@ -280,7 +280,7 @@ enableGitInfo = false
 #  weight = 5
 
 [[menu.main]]
-  name = "Contact"
+  name = "About"
   url = "#contact"
   weight = 6
 
