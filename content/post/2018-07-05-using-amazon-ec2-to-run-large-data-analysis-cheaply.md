@@ -11,20 +11,20 @@ header:
   caption: ''
   image: ''
 ---
-Spot instances on Amazon Elastic Compute Cloud (EC2) allows researchers to do high performance computing at very low cost. These are spare computing capacities that could be abruptly terminated. But such interruptions are rare, and can be tolerated by some jobs. For example, a 64-core workstation with 256 GB of memory can be rented at about $0.7 per hour, which is ~80% off regular on-demand prices. You can request 10 of such servers and use them for 5 days and 2 hours and it only cost you a few hundred dollars. 
+[Spot instances](https://aws.amazon.com/ec2/spot/) on Amazon Elastic Compute Cloud (EC2) allow researchers to do high performance computing at very low cost. For example, a 64-core workstation with 256 GB of memory can be rented at about $0.7 per hour, which is ~80% off regular on-demand prices. You can request 10 of such servers and use them for 5 days and 2 hours and it only cost you a few hundred dollars.These are spare computing capacities that could be abruptly terminated. But such interruptions are rare, and can be tolerated by some jobs.  
 
 Here I document how I requested an instance (virtual machine) on Amazon EC2, established a connection via SSH, and configured the Linux machine to run R using Docker containers (also new to me). I know little about Linux and networking. If I can make it work, so can you. The instructions below may not be the best way to do things, as I do not understand a lot of the technical details. 
 
 ## Main topics covered this tutorial:
 
-* Set up Key Pairs and Security Groups to enable SHH login.
-*	Request spot instance (virtual machine)
-* SHH access to the instance via Putty and Filezilla
-* Install Docker software so that we can easily configure a computing environment
-* Build a docker image based on the Bioconductor docker definition files and a few extra packages
-* Start R and compute from within the docker container
-* Create a "volume" (a virtual hard drive) and attach it to running instances.
-* Take a snapshot of a running instance, copy it across regions, and use it to create a volume.
+* Set up Key Pairs and Security Groups to enable SHH login,
+*	Request spot instance (virtual machine),
+* SHH access to the instance via Putty and Filezilla,
+* Install Docker software,
+* Build a Docker image based on the Bioconductor Docker definition files,
+* Start R and compute from within the container,
+* Create a "volume" (a virtual hard drive) and attach it to running instances,
+* Take a snapshot of a volume, copy it across regions, and use it to create a volume,
 * Google Compute Engine set-up.
 
 ## These are the steps I took:
@@ -69,7 +69,7 @@ Here I document how I requested an instance (virtual machine) on Amazon EC2, est
     ```
     scp -i ../key1.pem  animals.tar.gz     ubuntu@ec2-52-14-179-157.us-east-2.compute.amazonaws.com:/mnt/data/
      ```
-14.	Install Docker software follow this [instruction](https://docs.docker.com/install/linux/docker-ce/ubuntu/#install-using-the-repository), summerized below:
+14.	Install Docker software follow this. I know little about Linux and install software on Linux is always a headache. But Docker containers can simplify things a lot, as many standard pre-defined computing environments can be easily cloned and deployed. See [instruction](https://docs.docker.com/install/linux/docker-ce/ubuntu/#install-using-the-repository), summerized below:
 
     ```
     sudo apt-get update
@@ -89,7 +89,11 @@ Here I document how I requested an instance (virtual machine) on Amazon EC2, est
 15. Define your docker image. Save this  as a file called: Dockerfile in a folder such as /home/ubuntu/dockers/. See [here for the Bioconductor docker](https://www.bioconductor.org/help/docker/)
 
     ```
+    # Bioconductor image: https://www.bioconductor.org/help/docker/
     FROM bioconductor/release_core2
+    # Install R packages
+    RUN R -e 'install.packages(c("foreach","doSNOW"))'
+    # Install Bioconductor packages
     RUN R -e 'source("https://bioconductor.org/biocLite.R");
     biocLite(c("GO.db", "GOstats"), suppressUpdates = T)'
     ```
@@ -103,40 +107,42 @@ Here I document how I requested an instance (virtual machine) on Amazon EC2, est
     ```
     mkdir ~/data
     ```
-18.Start Bioconductor Docker container instance called bio1. The /home/ubuntu/data folder visible in the docker container as /data
+18. Start Bioconductor Docker container instance called bio1. Make the /home/ubuntu/data folder visible in the Docker container as /data.
 
     ```
-    sudo docker run -v /home/ubuntu/data:/data --name bio1 -t         mybioconductor 
+    sudo docker run -v /home/ubuntu/data:/data --name bio1 -t mybioconductor 
     ```
 19. Within the container, you now have the most recent R and Bioconductor. Note that you are logged in as root in the container with IDs like 9c4b9c5d1492.
+
+    ```
+    # Access the container
+    sudo docker exec -it bio1 /bin/bash 
+    R    # start R
+    ```
  ![image](/img/postEC2/image025.png)
-20. To run large R jobs in the background use nohup
+20. To run large R jobs in the background use nohup. It is safe to exit the container and terminate the SHH connection.
 
     ```
     nohup R CMD BATCH myScript.R > nohup.out & 
     ```
-21. It is safe to exit the container. To go back to the container:
 
-    ```
-    sudo docker exec -it bio2 /bin/bash 
-    ```
+
 
 The following steps are optional. 
 
-1. Create a volume from Elastic Block Store on the menu bar of the EC2 interface.
-Create volume in the exactly the same region such as us-east-2b. These storages will persist even if the instance is terminated.
-2. Attach the volume to the instance.  Select the volume and attach to the desired instance
-3. Mount the created volume to a folder /mnt. Note that the volume needs to be mounted again after reboot. [See here](https://n2ws.com/blog/how-to-guides/connect-aws-ebs-volume-another-instance)
+1. Create a volume (logical hard drive) from ELASTIC BLOCK STORE on the EC2 interface. Create a volume in the exactly the same region, such as us-east-2b, as the instance you want to attach to. These storages  persist even if the instance is terminated. I typically run computing on these attached volumes, instead of home directory on the instances. 
+2. Attach the volume to the instance. Select the newly created volumne. Using Actions --> Attach volumne to attach the volumne to a disired instance in the same region. 
+3. Mount the created volume to a folder called /mnt. Note that the volume needs to be mounted again after reboot. [Details.](https://n2ws.com/blog/how-to-guides/connect-aws-ebs-volume-another-instance)
 
     ```
     cd /
     sudo mkdir mnt  # create a folder
-    sudo chmod -R a+rwX /mnt
+    sudo chmod -R a+rwX /mnt # make the folder accessible to all
     lsblk    # check the list of devices 
-    sudo mkfs.ext4 /dev/xvdf      # create a file system
+    sudo mkfs.ext4 /dev/xvdf   # create a file system. data will be lost!
     sudo mount /dev/xvdf  /mnt 
     ```
-4. Snapshots can be created from the running instances. This snapshot can be copied across regions (Ohio to Central). We can also create a volume based on the snapshot and access the data. To mount volumes created from snapshots. Note that file system already exists on the volumes created from snapshots. We should be mounting the xvdf1, not xvdf. [Details](https://serverfault.com/questions/632905/cannot-mount-an-existing-ebs-on-aws)
+4. Snapshots can be created from the volumnes as backup. Storage is relatively cheap at $0.05 per GB per month. These snapshots can be copied across regions, such as from US East (Ohio) to US West (N. California). We can create a volume based on the snapshot and access the data. To mount volumes created from snapshots, please note that file system already exists. And we should be mounting the xvdf1, not xvdf. [Details.](https://serverfault.com/questions/632905/cannot-mount-an-existing-ebs-on-aws)
 
     ```
     cd /
@@ -145,7 +151,10 @@ Create volume in the exactly the same region such as us-east-2b. These storages 
     sudo mount /dev/xvdf1  /mnt      
     sudo chmod -R a+rwX /mnt    # make folder writable to all
     ```
-5. Google Compute Engine can be set up following a similar fashion following [instructions](https://www.onepagezen.com/google-cloud-ftp-filezilla-quick-start/)
+5. When your instance is terminated, Amazon will fill your fleet request with a new instance automatically. If the instance is in the same region (us-ease-2b), you can attached the data volumne and continue your calculation. Once Amazon created a replacement instance in us-east-2c, but my data volumne was in use-east-2b. I have to take a snapshot of the volume, and then use it to create another volume in us-east-2c. 
+
+6. Google Compute Engine also allows Preemptiable VMs, similar to Amazon EC2 Spot Instances. Google Compute Engine can be set up following a similar fashion following [instructions.](https://www.onepagezen.com/google-cloud-ftp-filezilla-quick-start/)  SHH connection can be directly established in Chrome Browser. 
+Summary:
  - Login and create instance at Google  Compute Engine 
  - Download PuttyGen
  - click Generate to create key pairs

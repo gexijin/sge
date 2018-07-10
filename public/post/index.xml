@@ -57,7 +57,7 @@ Thirteen high school students from across the state participated in this year’
       <pubDate>Thu, 05 Jul 2018 00:00:00 +0000</pubDate>
       
       <guid>/post/using-amazon-ec2-to-run-large-data-analysis-cheaply/</guid>
-      <description>Spot instances on Amazon Elastic Compute Cloud (EC2) allows researchers to do high performance computing at very low cost. These are spare computing capacities that could be abruptly terminated. But such interruptions are rare, and can be tolerated by some jobs. For example, a 64-core workstation with 256 GB of memory can be rented at about $0.7 per hour, which is ~80% off regular on-demand prices. You can request 10 of such servers and use them for 5 days and 2 hours and it only cost you a few hundred dollars.</description>
+      <description>Spot instances on Amazon Elastic Compute Cloud (EC2) allow researchers to do high performance computing at very low cost. For example, a 64-core workstation with 256 GB of memory can be rented at about $0.7 per hour, which is ~80% off regular on-demand prices. You can request 10 of such servers and use them for 5 days and 2 hours and it only cost you a few hundred dollars.These are spare computing capacities that could be abruptly terminated.</description>
     </item>
     
     <item>
