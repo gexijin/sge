@@ -12,7 +12,7 @@ header:
   image: ''
 ---
 
-[Amazon Lightsail](https://lightsail.aws.amazon.com/) now offers servers at $3.5 per month with 512MB of memory and 1Tb of data transfer. This make it possible to host personal VPN (virtual private network) servers cheaply. Docker containers enable quick configuration of these servers. 
+[Amazon Lightsail](https://lightsail.aws.amazon.com/) now offers servers at $3.5 per month with 512MB of memory and 1Tb of data transfer. This make it possible to host personal VPN (virtual private network) servers cheaply. Docker containers enable quick configuration of these servers. VPN enables users to connect to work network remotely. I am especially concerned with blocked Google websites for scientists.
 
 1\. Create and configure an instance on Amazon Lightsail
 ---------------------------
@@ -53,7 +53,7 @@ sudo apt-get install docker-ce
 
 5\. Load the Docker build for VPN
 ------------------------------
-We use the docker-ipsec-vpn-server created by [Lin Song](https://github.com/hwdsl2/docker-ipsec-vpn-server)
+I used the ipsec-vpn-server created by [Lin Song](https://github.com/hwdsl2/docker-ipsec-vpn-server)
 ```
 sudo docker pull hwdsl2/ipsec-vpn-server
 ```
@@ -85,9 +85,11 @@ That's it!  You have a running VPN server!
 8\. Optional: Server management
 
  - Retrieve password:
+ 
 ```  
 sudo docker logs ipsec-vpn-server
 ```
+
  - Current connections:
  
  ```
@@ -122,7 +124,9 @@ Following this [discussion](https://www.digitalocean.com/community/questions/can
 
 10\. Optional: Limit bandwidth
 We want to run a script to monitor the network traffic every hour and shutdown the docker container if exceeds 999G. 
- - Save the following as data_limit.sh under the home directory of ubuntu. [Original script](https://pastebin.com/2vXMBaSi):
+
+ - Save the following as data_limit.sh under the home directory of ubuntu. [Original script](https://pastebin.com/2vXMBaSi).
+ 
 ```
 #!/bin/bash
 ax=`vnstat --oneline | awk -F ";" '{print $11}'`
@@ -135,10 +139,13 @@ then
 fi
 ```
  - Schedule to run this script every hour by 
+ 
  ```
  crontab -e
  ```
+ 
  and then add this line:
+ 
  ```
  0 * * * * bash /home/ubuntu/data_limit.sh
  ```
