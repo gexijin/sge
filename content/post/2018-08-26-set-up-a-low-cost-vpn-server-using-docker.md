@@ -12,7 +12,7 @@ header:
   image: ''
 ---
 
-[Amazon Lightsail](https://lightsail.aws.amazon.com/) now offers servers at $3.5 per month with 512MB of memory and 1Tb of data transfer. This make it possible to host personal VPN (virtual private network) servers cheaply. Docker containers enable quick configuration of these servers. VPN enables users to connect to work network remotely. I am especially concerned with blocked Google websites for scientists.
+[Amazon Lightsail](https://lightsail.aws.amazon.com/) now offers servers at $3.5 per month with 512MB of memory and 1Tb of data transfer. This make it possible to host personal VPN (virtual private network) servers cheaply. Docker containers enable quick configuration of these servers. As someone who uses Google search and Google Scholar regularily, sometimes dozens times a day, I am especially concerned by the blockage of Google websites for scientists in some countries. Hope this helps.
 
 1\. Create and configure an instance on Amazon Lightsail
 ---------------------------
