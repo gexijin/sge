@@ -95,6 +95,7 @@ That's it!  You have a running VPN server!
 
 
 9\. Optional: Server management
+------------------------------
 
  - Retrieve password:
  
@@ -109,6 +110,7 @@ sudo docker logs ipsec-vpn-server
  ```
  
 10\. Optional: Monitoring data transfer
+------------------------------
 One way these servers causes anxiety is that bandwidth can cost of lot of money. There is no easy way to put a limit to it. 
 Following this [discussion](https://www.digitalocean.com/community/questions/can-i-make-my-server-automatically-suspend-if-it-hits-the-bandwidth-limit), it is possible to mointor network usage and stop VPN service when a threshold is crossed. 
  
@@ -135,6 +137,7 @@ Following this [discussion](https://www.digitalocean.com/community/questions/can
  ```
 
 11\. Optional: Limit bandwidth
+------------------------------
 We want to run a script to monitor the network traffic every hour and shutdown the docker container if exceeds 999G. 
 
  - Save the following as data_limit.sh under the home directory of ubuntu. [Original script](https://pastebin.com/2vXMBaSi).
