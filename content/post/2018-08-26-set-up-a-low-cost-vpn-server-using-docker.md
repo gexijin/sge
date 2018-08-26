@@ -68,7 +68,7 @@ I have no idea what this means but I just did  as instructed by [Lin Song](https
 sudo modprobe af_key
 ```
 7\. Setup user name and password
-
+--------------------------------
 Save this in an environment file called vpn.env.
 ```
 VPN_IPSEC_PSK=secret
@@ -117,7 +117,7 @@ Following this [discussion](https://www.digitalocean.com/community/questions/can
  - Install vnStat following this [page](https://www.howtoforge.com/tutorial/vnstat-network-monitoring-ubuntu/)
  
  ```
- sudo pat-get install vnstat
+ sudo apt-get install vnstat
  ```
  
  - List network interfaces:
@@ -164,6 +164,8 @@ fi
  ```
  0 * * * * bash /home/ubuntu/data_limit.sh
  ```
+ 
+ 
  
 
 
