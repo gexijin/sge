@@ -1,5 +1,5 @@
 ---
-title: Set up a low-cost VPN server using Docker
+title: Set up a low-cost VPN server easily with Docker
 author: Steven Ge
 date: '2018-08-26'
 slug: set-up-a-low-cost-vpn-server-using-docker
