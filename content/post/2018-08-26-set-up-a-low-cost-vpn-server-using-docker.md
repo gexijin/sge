@@ -111,7 +111,7 @@ sudo docker logs ipsec-vpn-server
  
 10\. Optional: Monitoring data transfer
 ------------------------------
-One way these servers causes anxiety is that bandwidth can cost of lot of money. There is no easy way to put a limit to it. 
+One way these servers cause anxiety is that bandwidth beyond 1TB costs extra money, with no upper bound(!). There is no easy way to put a limit to it. I hope Amazon and DigitalOcean provide a simple configuration on their webpage to block a server once the bandwidth limit is reached. But maybe it is not in their best financial interest.
 Following this [discussion](https://www.digitalocean.com/community/questions/can-i-make-my-server-automatically-suspend-if-it-hits-the-bandwidth-limit), it is possible to mointor network usage and stop VPN service when a threshold is crossed. 
  
  - Install vnStat following this [page](https://www.howtoforge.com/tutorial/vnstat-network-monitoring-ubuntu/)
