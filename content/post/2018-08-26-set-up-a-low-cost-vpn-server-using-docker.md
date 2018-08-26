@@ -29,7 +29,7 @@ sudo do-release-upgrade
 sudo apt-get update
 sudo apt-get upgrade
 ```
-3\. Establish SSH access
+3\. Establish SSH access to the instance
 ---------------------------
  - Download the pem file from Amazon Lightsail. 
  - Use [puttygen.exe](https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html) to convert it into a ppk file.
@@ -37,6 +37,7 @@ sudo apt-get upgrade
  
 4\. Install Docker software
 ---------------------------
+Once we have SSH access, we are ready to work on the server from the command line.
 ```
 sudo apt-get update
 sudo apt-get install \
@@ -55,21 +56,30 @@ sudo apt-get install docker-ce
 
 5\. Load the Docker build for VPN
 ------------------------------
-I used the ipsec-vpn-server created by [Lin Song](https://github.com/hwdsl2/docker-ipsec-vpn-server)
+I downloaded the ipsec-vpn-server created by [Lin Song](https://github.com/hwdsl2/docker-ipsec-vpn-server)
 ```
 sudo docker pull hwdsl2/ipsec-vpn-server
 ```
 
-6\. Load the IPsec af_key kernel modle on the Docker host. 
+6\. Load the IPsec af_key kernel module 
 -------------------------------
-I have no idea what this means but I just did this as instructed by Lin Song:
+I have no idea what this means but I just did  as instructed by [Lin Song](https://github.com/hwdsl2/docker-ipsec-vpn-server):
 ```
 sudo modprobe af_key
 ```
+7\. Setup user name and password
 
-7\. Start the docker container
+Save this in an environment file called vpn.env.
+```
+VPN_IPSEC_PSK=secret
+VPN_USER=user_name
+VPN_PASSWORD=password
+```
+You will need to change the user name, password and the IPsec secret. Along with the IP address, these will be needed to login to the VPN server.
+
+8\. Start the docker container
 ------------------------------
-I saved this command as a script file called start_docker.sh.
+I saved this command as a shell script file called start_docker.sh, so that I can easily start the container later.
 ```
 docker run \
   --name ipsec-vpn-server \
@@ -84,7 +94,7 @@ docker run \
 That's it!  You have a running VPN server!   
 
 
-8\. Optional: Server management
+9\. Optional: Server management
 
  - Retrieve password:
  
@@ -98,7 +108,7 @@ sudo docker logs ipsec-vpn-server
  sudo docker exec -it ipsec-vpn-server ipsec whack --trafficstatus
  ```
  
-9\. Optional: Monitoring data transfer
+10\. Optional: Monitoring data transfer
 One way these servers causes anxiety is that bandwidth can cost of lot of money. There is no easy way to put a limit to it. 
 Following this [discussion](https://www.digitalocean.com/community/questions/can-i-make-my-server-automatically-suspend-if-it-hits-the-bandwidth-limit), it is possible to mointor network usage and stop VPN service when a threshold is crossed. 
  
@@ -124,7 +134,7 @@ Following this [discussion](https://www.digitalocean.com/community/questions/can
  sudo /etc/init.d/vnstat stat
  ```
 
-10\. Optional: Limit bandwidth
+11\. Optional: Limit bandwidth
 We want to run a script to monitor the network traffic every hour and shutdown the docker container if exceeds 999G. 
 
  - Save the following as data_limit.sh under the home directory of ubuntu. [Original script](https://pastebin.com/2vXMBaSi).
