@@ -165,7 +165,7 @@ fi
  ```
  More information about scheduling tasks in Linux can be found [here](https://en.wikipedia.org/wiki/Cron).
  
-12\. Optional: Set a billing alarm at Amazon Lightsail
+12\. Optional: Set a billing alarm at Amazon
 --------------------------------
 You can also [setup an alarm](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/monitor_estimated_charges_with_cloudwatch.html#turning_on_billing_metrics) with Amazon Lightsail, so that an email is sent to you when your charges exceed a certain threshold. Based on CloudWatch, these alarms need to be set up in US east Virgina region, even if your servers are somewhere else. 
 
