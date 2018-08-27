@@ -12,9 +12,9 @@ header:
   image: ''
 ---
 
-[Amazon Lightsail](https://lightsail.aws.amazon.com/) now offers servers at $3.5 per month with 1 vCPU, 512MB of memory, and 1Tb of data transfer. Similar services are available at [DigitalOcean](http://digitalocean.com). This makes it possible to host personal VPN (virtual private network) servers cheaply. Docker containers enable quick configuration of these servers without a lot of Linux experience. The following steps can be finished by people with a little Linux experience. 
+[Amazon Lightsail](https://lightsail.aws.amazon.com/) now offers servers at $3.5 per month with 1 vCPU, 512MB of memory, and 1Tb of data transfer. Similar services are available at [DigitalOcean](http://digitalocean.com). We can host personal VPN (virtual private network) servers cheaply. Docker containers enable quick configuration of these servers, even for people with little Linux experience.
 
-As someone who uses Google search and Google Scholar regularily, sometimes dozens times a day, I am especially concerned by the blockage of Google websites for scientists in some countries. Hope this helps.
+As someone who uses Google search and Google Scholar dozens times a day, I am especially concerned by the blockage of Google websites for scientists in some countries. Hope this helps.
 
 1\. Create and configure an instance on Amazon Lightsail
 ---------------------------
@@ -111,9 +111,9 @@ sudo docker logs ipsec-vpn-server
  
 10\. Optional: Monitoring data transfer
 ------------------------------
-One way these servers causes anxiety is there is no upper bound for your cost if your bandwidth went beyond 1TB. There is no easy way to put a limit to it. I hope Amazon and DigitalOcean provide a simple configuration on their webpage to block a server once the bandwidth limit is reached. But maybe it is not in their best financial interest. Following this [discussion](https://www.digitalocean.com/community/questions/can-i-make-my-server-automatically-suspend-if-it-hits-the-bandwidth-limit), it is possible to mointor network usage and stop VPN service when a threshold is crossed. 
+1TB is a lot of data transfer. But if you exceed that, you will be charged at $0.09 per GB. One way these servers can cause anxiety is the uncertainty. And there is no upper bound for your cost. There is no easy way to put a limit to it. I hope Amazon and DigitalOcean provide a simple configuration on their webpage to block a server once the bandwidth limit is reached. But maybe it is not in their best financial interest. Following this [discussion](https://www.digitalocean.com/community/questions/can-i-make-my-server-automatically-suspend-if-it-hits-the-bandwidth-limit), it is possible to monitor network usage and stop VPN service when a threshold is crossed. 
  
- - Install vnStat according to this [page](https://www.howtoforge.com/tutorial/vnstat-network-monitoring-ubuntu/)
+ - Install vnStat according to this [page](https://www.howtoforge.com/tutorial/vnstat-network-monitoring-ubuntu/) for monitoring data usage. 
  
  ```
  sudo apt-get install vnstat
@@ -137,9 +137,9 @@ One way these servers causes anxiety is there is no upper bound for your cost if
 
 11\. Optional: Limit bandwidth
 ------------------------------
-We want to run a script to monitor the network traffic every hour and shutdown the docker container if exceeds 999G. 
+We want to run a script to monitor the network traffic every hour and shutdown the docker container if data transfer exceeds 999 GB for the month. 
 
- - Save the following as data_limit.sh under the home directory of ubuntu. [Original script](https://pastebin.com/2vXMBaSi).
+ - Save the following as data_limit.sh under the home directory of ubuntu. The [Original script](https://pastebin.com/2vXMBaSi) is revised. Instead of shutdown the server, the docker container is stopped.
  
 ```
 #!/bin/bash
@@ -148,7 +148,7 @@ if [[ "$ax" == *GiB* ]];
 then
         if [ $(echo "$(echo "$ax" | sed 's/ GiB//g') > 999"|bc) -eq 1 ]
         then
-                shutdown -h now
+                docker stop ipsec-vpn-server
         fi
 fi
 ```
@@ -163,9 +163,11 @@ fi
  ```
  0 * * * * bash /home/ubuntu/data_limit.sh
  ```
- More informatoin about scheduling tasks in Linux can be found [here](https://en.wikipedia.org/wiki/Cron).
+ More information about scheduling tasks in Linux can be found [here](https://en.wikipedia.org/wiki/Cron).
  
- 
+12\. Optional: Set a billing alarm at Amazon Lightsail
+--------------------------------
+You can also [setup an alarm](https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/monitor_estimated_charges_with_cloudwatch.html#turning_on_billing_metrics) with Amazon Lightsail, so that an email is sent to you when your charges exceed a certain threshold. Based on CloudWatch, these alarms need to be set up in US east Virgina region, even if your servers are somewhere else. 
 
 
 
