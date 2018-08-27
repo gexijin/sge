@@ -16,6 +16,8 @@ header:
 
 As someone who uses Google search and Google Scholar dozens times a day, I am especially concerned by the blockage of Google websites for scientists in some countries. Hope this helps.
 
+All the Linux commands are run from the home directory of a user /home/ubuntu/.  
+
 1\. Create and configure an instance on Amazon Lightsail
 ---------------------------
 Make sure you select the Linux Ubuntu instance without apps. Click on the instance, and then under Networking attach a static IP address to this instance. Firewall needs to be modified to allow VPN traffic through the 500 and 4500 ports. 
